@@ -1,0 +1,1194 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тайна лаборатории профессора</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #0a0e1a;
+            --bg-card: #111827;
+            --bg-input: #1e293b;
+            --accent-cyan: #06b6d4;
+            --accent-green: #10b981;
+            --accent-purple: #8b5cf6;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #1e293b;
+            --glow-cyan: rgba(6, 182, 212, 0.3);
+            --glow-green: rgba(16, 185, 129, 0.3);
+            --glow-purple: rgba(139, 92, 246, 0.3);
+            --glow-amber: rgba(245, 158, 11, 0.3);
+            --glow-rose: rgba(244, 63, 94, 0.3);
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(rgba(6, 182, 212, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(6, 182, 212, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 0;
+            animation: orbFloat 20s ease-in-out infinite;
+        }
+
+        .bg-orb-1 {
+            width: 500px; height: 500px;
+            background: var(--accent-cyan);
+            top: -100px; left: -100px;
+        }
+
+        .bg-orb-2 {
+            width: 400px; height: 400px;
+            background: var(--accent-purple);
+            bottom: -100px; right: -100px;
+            animation-delay: -7s;
+        }
+
+        .bg-orb-3 {
+            width: 300px; height: 300px;
+            background: var(--accent-green);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -14s;
+        }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -40px) scale(1.1); }
+            50% { transform: translate(-20px, 20px) scale(0.9); }
+            75% { transform: translate(40px, 30px) scale(1.05); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInDown 1s ease;
+        }
+
+        .header-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            display: inline-block;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.8rem, 5vw, 2.8rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple), var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+            margin-bottom: 12px;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Progress bar */
+        .progress-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 40px;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .progress-label span {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .progress-label .progress-count {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-cyan);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-input);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+            border-radius: 4px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 0%;
+        }
+
+        /* Lock cards */
+        .lock-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 28px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            animation: fadeInUp 0.8s ease both;
+        }
+
+        .lock-card:nth-child(1) { animation-delay: 0.3s; }
+        .lock-card:nth-child(2) { animation-delay: 0.5s; }
+        .lock-card:nth-child(3) { animation-delay: 0.7s; }
+        .lock-card:nth-child(4) { animation-delay: 0.9s; }
+
+        .lock-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--card-accent);
+            opacity: 0.8;
+        }
+
+        .lock-card.locked { border-color: var(--border); }
+        .lock-card.unlocked {
+            border-color: var(--accent-green);
+            box-shadow: 0 0 30px var(--glow-green);
+        }
+
+        .lock-card.unlocked::before {
+            background: var(--accent-green);
+            opacity: 1;
+        }
+
+        .lock-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .lock-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: var(--card-accent-bg);
+            flex-shrink: 0;
+        }
+
+        .lock-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--card-accent);
+        }
+
+        .lock-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .lock-status {
+            margin-left: auto;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-locked {
+            background: rgba(244, 63, 94, 0.15);
+            color: var(--accent-rose);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+
+        .status-unlocked {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .lock-content {
+            background: var(--bg-input);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .problem-text {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: var(--text-primary);
+        }
+
+        .problem-text .highlight {
+            color: var(--accent-cyan);
+            font-weight: 600;
+        }
+
+        .math-formula {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(6, 182, 212, 0.08);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            text-align: center;
+            font-size: 1.15rem;
+            color: var(--accent-cyan);
+            line-height: 2;
+        }
+
+        .sub-problems {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .sub-problem {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: rgba(139, 92, 246, 0.08);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .sub-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--accent-purple);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        /* Input area */
+        .input-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .code-inputs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .code-input {
+            width: 56px;
+            height: 64px;
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: var(--bg-dark);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .code-input:focus {
+            border-color: var(--card-accent);
+            box-shadow: 0 0 20px var(--card-glow);
+        }
+
+        .code-input.correct {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .code-input.wrong {
+            border-color: var(--accent-rose);
+            color: var(--accent-rose);
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-8px); }
+            40% { transform: translateX(8px); }
+            60% { transform: translateX(-6px); }
+            80% { transform: translateX(6px); }
+        }
+
+        .check-btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--card-accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .check-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--card-glow);
+        }
+
+        .check-btn:active {
+            transform: translateY(0);
+        }
+
+        .check-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .hint-text {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .hint-btn {
+            background: none;
+            border: none;
+            color: var(--accent-amber);
+            font-size: 0.85rem;
+            cursor: pointer;
+            padding: 4px 0;
+            margin-top: 4px;
+            transition: opacity 0.3s;
+        }
+
+        .hint-btn:hover { opacity: 0.8; }
+
+        .hint-content {
+            display: none;
+            margin-top: 12px;
+            padding: 14px 18px;
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: var(--accent-amber);
+            line-height: 1.6;
+        }
+
+        .hint-content.visible { display: block; animation: fadeInUp 0.4s ease; }
+
+        /* Final section */
+        .final-section {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(6, 182, 212, 0.1));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 20px;
+            padding: 36px;
+            margin-top: 40px;
+            animation: fadeInUp 0.8s ease 1.1s both;
+        }
+
+        .final-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 28px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .final-locks {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .final-lock-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px;
+            background: var(--bg-input);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .final-lock-row .label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .final-lock-row .value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .final-lock-row .value.filled {
+            color: var(--accent-green);
+        }
+
+        .final-sum-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 24px 0;
+            flex-wrap: wrap;
+        }
+
+        .sum-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        .sum-input {
+            width: 120px;
+            height: 56px;
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: var(--bg-dark);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .sum-input:focus {
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 20px var(--glow-purple);
+        }
+
+        .sum-check-btn {
+            padding: 14px 32px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            color: white;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+        }
+
+        .sum-check-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--glow-purple);
+        }
+
+        /* Victory overlay */
+        .victory-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .victory-overlay.visible {
+            display: flex;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .victory-card {
+            background: var(--bg-card);
+            border: 2px solid var(--accent-green);
+            border-radius: 24px;
+            padding: 48px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 0 60px var(--glow-green);
+            animation: scaleIn 0.5s ease;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .victory-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .victory-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--accent-green);
+            margin-bottom: 12px;
+        }
+
+        .victory-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .victory-result {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--accent-cyan);
+            margin: 20px 0;
+        }
+
+        .victory-message {
+            color: var(--accent-amber);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        /* Particles */
+        .particles {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 1001;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: particleFall 3s ease-in forwards;
+        }
+
+        @keyframes particleFall {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Error message */
+        .error-msg {
+            color: var(--accent-rose);
+            font-size: 0.85rem;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .error-msg.visible {
+            display: block;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        /* Success animation */
+        .success-flash {
+            animation: successPulse 0.6s ease;
+        }
+
+        @keyframes successPulse {
+            0% { box-shadow: 0 0 0 0 var(--glow-green); }
+            50% { box-shadow: 0 0 40px 10px var(--glow-green); }
+            100% { box-shadow: 0 0 0 0 transparent; }
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .container { padding: 20px 12px; }
+            .lock-card { padding: 20px; }
+            .lock-content { padding: 16px; }
+            .code-input { width: 48px; height: 56px; font-size: 1.5rem; }
+            .final-locks { grid-template-columns: 1fr; }
+            .input-area { flex-direction: column; align-items: flex-start; }
+            .final-sum-area { flex-direction: column; }
+        }
+
+        /* Lab decor */
+        .flask-decor {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 40px;
+            opacity: 0.2;
+            animation: float 4s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        .dna-decor {
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            font-size: 36px;
+            opacity: 0.15;
+            animation: spin 8s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Tooltip for locked state */
+        .lock-card.unlocked .input-area { opacity: 0.4; pointer-events: none; }
+        .lock-card.unlocked .hint-btn { display: none; }
+        .lock-card.unlocked .hint-content { display: none !important; }
+
+        .formula-line {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .fraction {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 4px;
+            vertical-align: middle;
+        }
+
+        .fraction .num {
+            border-bottom: 2px solid var(--accent-cyan);
+            padding: 0 6px 2px;
+            line-height: 1.2;
+        }
+
+        .fraction .den {
+            padding: 2px 6px 0;
+            line-height: 1.2;
+        }
+
+        .formula-inline {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+    <div class="flask-decor">🧪</div>
+    <div class="dna-decor">🔬</div>
+
+    <div class="container">
+        <header class="header">
+            <div class="header-icon">🔐</div>
+            <h1>Тайна лаборатории<br>профессора</h1>
+            <p>Откройте 4 замка сейфа с реактивами. Каждый замок — задача. Получите три кода, сложите — и сейф откроется!</p>
+        </header>
+
+        <div class="progress-container">
+            <div class="progress-label">
+                <span>🔓 Прогресс открытия сейфа</span>
+                <span class="progress-count" id="progressText">0 / 4 замков</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div id="locksContainer">
+            <!-- Lock 1 -->
+            <div class="lock-card locked" id="lock1" style="--card-accent: var(--accent-cyan); --card-accent-bg: rgba(6, 182, 212, 0.12); --card-glow: var(--glow-cyan);">
+                <div class="lock-header">
+                    <div class="lock-icon">🔒</div>
+                    <div>
+                        <div class="lock-title">ЗАМОК №1 — Проценты</div>
+                        <div class="lock-subtitle">Изменение цены</div>
+                    </div>
+                    <div class="lock-status status-locked" id="status1">🔴 Закрыт</div>
+                </div>
+                <div class="lock-content">
+                    <div class="problem-text">
+                        Товар стоил <span class="highlight">2500 рублей</span>. Сначала цену повысили на <span class="highlight">20%</span>, а потом понизили на <span class="highlight">20%</span>.
+                    </div>
+                    <div class="problem-text" style="margin-top: 10px;">
+                        Сколько рублей стал стоить товар?
+                    </div>
+                    <div class="math-formula">
+                        2500 → +20% → −20% = ?
+                    </div>
+                    <div class="hint-text">💡 Возьмите три первые цифры ответа — это код.</div>
+                    <button class="hint-btn" onclick="toggleHint(1)">Показать подсказку</button>
+                    <div class="hint-content" id="hint1">
+                        Сначала: 2500 × 1.20 = 3000. Потом: 3000 × 0.80 = 2400. Три первые цифры: <strong>240</strong>
+                    </div>
+                </div>
+                <div class="input-area">
+                    <div class="code-inputs">
+                        <input type="text" class="code-input" id="lock1-d1" maxlength="1" data-lock="1" data-pos="1" autocomplete="off">
+                        <input type="text" class="code-input" id="lock1-d2" maxlength="1" data-lock="1" data-pos="2" autocomplete="off">
+                        <input type="text" class="code-input" id="lock1-d3" maxlength="1" data-lock="1" data-pos="3" autocomplete="off">
+                    </div>
+                    <button class="check-btn" onclick="checkLock(1)">🔓 Открыть</button>
+                </div>
+                <div class="error-msg" id="error1">Неверный код. Попробуйте ещё раз!</div>
+            </div>
+
+            <!-- Lock 2 -->
+            <div class="lock-card locked" id="lock2" style="--card-accent: var(--accent-purple); --card-accent-bg: rgba(139, 92, 246, 0.12); --card-glow: var(--glow-purple);">
+                <div class="lock-header">
+                    <div class="lock-icon">🔢</div>
+                    <div>
+                        <div class="lock-title">ЗАМОК №2 — Дроби и десятичные</div>
+                        <div class="lock-subtitle">Вычисление выражения</div>
+                    </div>
+                    <div class="lock-status status-locked" id="status2">🔴 Закрыт</div>
+                </div>
+                <div class="lock-content">
+                    <div class="problem-text">Вычислите:</div>
+                    <div class="math-formula">
+                        <div class="formula-line">
+                            <span>( <span class="fraction"><span class="num">7</span><span class="den">8</span></span> − 0,125 ) × 200 = ?</span>
+                        </div>
+                    </div>
+                    <div class="hint-text">💡 Получится целое трёхзначное число — это код.</div>
+                    <button class="hint-btn" onclick="toggleHint(2)">Показать подсказку</button>
+                    <div class="hint-content" id="hint2">
+                        7/8 = 0,875. Тогда: (0,875 − 0,125) × 200 = 0,75 × 200 = <strong>150</strong>
+                    </div>
+                </div>
+                <div class="input-area">
+                    <div class="code-inputs">
+                        <input type="text" class="code-input" id="lock2-d1" maxlength="1" data-lock="2" data-pos="1" autocomplete="off">
+                        <input type="text" class="code-input" id="lock2-d2" maxlength="1" data-lock="2" data-pos="2" autocomplete="off">
+                        <input type="text" class="code-input" id="lock2-d3" maxlength="1" data-lock="2" data-pos="3" autocomplete="off">
+                    </div>
+                    <button class="check-btn" onclick="checkLock(2)">🔓 Открыть</button>
+                </div>
+                <div class="error-msg" id="error2">Неверный код. Попробуйте ещё раз!</div>
+            </div>
+
+            <!-- Lock 3 -->
+            <div class="lock-card locked" id="lock3" style="--card-accent: var(--accent-amber); --card-accent-bg: rgba(245, 158, 11, 0.12); --card-glow: var(--glow-amber);">
+                <div class="lock-header">
+                    <div class="lock-icon">⚖️</div>
+                    <div>
+                        <div class="lock-title">ЗАМОК №3 — Пропорции</div>
+                        <div class="lock-subtitle">Прямая и обратная пропорциональность</div>
+                    </div>
+                    <div class="lock-status status-locked" id="status3">🔴 Закрыт</div>
+                </div>
+                <div class="lock-content">
+                    <div class="problem-text">Решите три задачи и перемножьте ответы:</div>
+                    <div class="sub-problems">
+                        <div class="sub-problem">
+                            <div class="sub-num">1</div>
+                            <div>Для перевозки груза нужно <strong>8 машин по 3 тонны</strong>. Сколько машин <strong>по 4 тонны</strong> потребуется?</div>
+                        </div>
+                        <div class="sub-problem">
+                            <div class="sub-num">2</div>
+                            <div><strong>5 рабочих</strong> делают заказ за <strong>12 дней</strong>. За сколько дней сделают <strong>6 рабочих</strong>?</div>
+                        </div>
+                        <div class="sub-problem">
+                            <div class="sub-num">3</div>
+                            <div>На <strong>20 пирожков</strong> — <strong>5 стаканов</strong> муки. Сколько стаканов на <strong>32 пирожка</strong>?</div>
+                        </div>
+                    </div>
+                    <div class="hint-text">💡 Перемножьте три полученных числа. Результат — трёхзначный код.</div>
+                    <button class="hint-btn" onclick="toggleHint(3)">Показать подсказку</button>
+                    <div class="hint-content" id="hint3">
+                        1) 8 × 3 = 24 т, значит 24 ÷ 4 = <strong>6</strong> машин.<br>
+                        2) 5 × 12 = 60 чел·дн, значит 60 ÷ 6 = <strong>10</strong> дней.<br>
+                        3) 20 пир. → 5 стак., 32 пир. → 32 × 5/20 = <strong>8</strong> стак.<br>
+                        6 × 10 × 8 = <strong>480</strong>
+                    </div>
+                </div>
+                <div class="input-area">
+                    <div class="code-inputs">
+                        <input type="text" class="code-input" id="lock3-d1" maxlength="1" data-lock="3" data-pos="1" autocomplete="off">
+                        <input type="text" class="code-input" id="lock3-d2" maxlength="1" data-lock="3" data-pos="2" autocomplete="off">
+                        <input type="text" class="code-input" id="lock3-d3" maxlength="1" data-lock="3" data-pos="3" autocomplete="off">
+                    </div>
+                    <button class="check-btn" onclick="checkLock(3)">🔓 Открыть</button>
+                </div>
+                <div class="error-msg" id="error3">Неверный код. Попробуйте ещё раз!</div>
+            </div>
+
+            <!-- Lock 4 -->
+            <div class="lock-card locked" id="lock4" style="--card-accent: var(--accent-rose); --card-accent-bg: rgba(244, 63, 94, 0.12); --card-glow: var(--glow-rose);">
+                <div class="lock-header">
+                    <div class="lock-icon">🧠</div>
+                    <div>
+                        <div class="lock-title">ЗАМОК №4 — Всё вместе</div>
+                        <div class="lock-subtitle">Комбинированная задача</div>
+                    </div>
+                    <div class="lock-status status-locked" id="status4">🔴 Закрыт</div>
+                </div>
+                <div class="lock-content">
+                    <div class="problem-text">Вычислите выражение:</div>
+                    <div class="math-formula">
+                        <div class="formula-line">
+                            <span><span class="formula-inline">(
+                                <span class="fraction"><span class="num">2</span><span class="den">3</span></span>
+                                + 0,25)
+                            </span> × 1,2</span>
+                            <span style="font-size: 0.9em; color: var(--text-muted); display: block; border-bottom: var(--accent-cyan) solid 3px; width: 30%;">       </span>
+                            <span>20% от числа 50</span>
+                        </div>
+                    </div>
+                    <div class="problem-text" style="margin-top: 12px;">
+                        Умножьте результат на <span class="highlight">1000</span> — получите трёхзначный код.
+                    </div>
+                    <button class="hint-btn" onclick="toggleHint(4)">Показать подсказку</button>
+                    <div class="hint-content" id="hint4">
+                        2/3 + 0,25 = 11/12. (11/12) × 1,2 = 1,1.<br>
+                        20% от 50 = 10.<br>
+                        1,1 ÷ 10 = 0,11. 0,11 × 1000 = <strong>110</strong>
+                    </div>
+                </div>
+                <div class="input-area">
+                    <div class="code-inputs">
+                        <input type="text" class="code-input" id="lock4-d1" maxlength="1" data-lock="4" data-pos="1" autocomplete="off">
+                        <input type="text" class="code-input" id="lock4-d2" maxlength="1" data-lock="4" data-pos="2" autocomplete="off">
+                        <input type="text" class="code-input" id="lock4-d3" maxlength="1" data-lock="4" data-pos="3" autocomplete="off">
+                    </div>
+                    <button class="check-btn" onclick="checkLock(4)">🔓 Открыть</button>
+                </div>
+                <div class="error-msg" id="error4">Неверный код. Попробуйте ещё раз!</div>
+            </div>
+        </div>
+
+        <!-- Final Section -->
+        <div class="final-section" id="finalSection">
+            <div class="final-title">🔓 ФИНАЛЬНЫЙ ШАГ — Откройте сейф!</div>
+            <div class="final-locks">
+                <div class="final-lock-row">
+                    <span class="label">Замок 1:</span>
+                    <span class="value" id="final1">---</span>
+                </div>
+                <div class="final-lock-row">
+                    <span class="label">Замок 2:</span>
+                    <span class="value" id="final2">---</span>
+                </div>
+                <div class="final-lock-row">
+                    <span class="label">Замок 3:</span>
+                    <span class="value" id="final3">---</span>
+                </div>
+                <div class="final-lock-row">
+                    <span class="label">Замок 4:</span>
+                    <span class="value" id="final4">---</span>
+                </div>
+            </div>
+            <div class="final-sum-area">
+                <span class="sum-label">СУММА =</span>
+                <input type="text" class="sum-input" id="sumInput" maxlength="4" placeholder="???" autocomplete="off">
+                <button class="sum-check-btn" onclick="checkFinal()">ОТКРЫТЬ СЕЙФ</button>
+            </div>
+            <div class="error-msg" id="finalError" style="text-align: center;">Неверная сумма. Проверьте все коды!</div>
+        </div>
+    </div>
+
+    <!-- Victory Overlay -->
+    <div class="victory-overlay" id="victoryOverlay">
+        <div class="victory-card">
+            <div class="victory-icon">🎉</div>
+            <div class="victory-title">СЕЙФ ОТКРЫТ!</div>
+            <div class="victory-subtitle">Вы нашли все коды и решили задачу</div>
+            <div class="victory-result" id="victorySum">980</div>
+            <div class="victory-message">🧪 Вы — гении математики!</div>
+            <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px;">
+                Реактивы спасены. Лаборатория в безопасности!
+            </div>
+            <button class="sum-check-btn" onclick="closeVictory()" style="padding: 12px 32px; font-size: 0.9rem;">
+                ✨ Отлично!
+            </button>
+        </div>
+    </div>
+
+    <div class="particles" id="particles"></div>
+
+    <script>
+        const codes = { 1: '240', 2: '150', 3: '480', 4: '110' };
+        const lockStates = { 1: false, 2: false, 3: false, 4: false };
+
+        // Auto-tab between inputs
+        document.querySelectorAll('.code-input').forEach(input => {
+            input.addEventListener('input', function(e) {
+                const val = this.value.replace(/[^0-9]/g, '');
+                this.value = val;
+                
+                if (val.length === 1) {
+                    const lock = this.dataset.lock;
+                    const pos = parseInt(this.dataset.pos);
+                    const nextInput = document.querySelector(`[data-lock="${lock}"][data-pos="${pos + 1}"]`);
+                    if (nextInput) nextInput.focus();
+                }
+            });
+
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && this.value === '') {
+                    const lock = this.dataset.lock;
+                    const pos = parseInt(this.dataset.pos);
+                    const prevInput = document.querySelector(`[data-lock="${lock}"][data-pos="${pos - 1}"]`);
+                    if (prevInput) {
+                        prevInput.focus();
+                        prevInput.value = '';
+                    }
+                }
+                if (e.key === 'Enter') {
+                    checkLock(parseInt(this.dataset.lock));
+                }
+            });
+
+            input.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const paste = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
+                const lock = this.dataset.lock;
+                for (let i = 0; i < 3 && i < paste.length; i++) {
+                    const inp = document.querySelector(`[data-lock="${lock}"][data-pos="${i + 1}"]`);
+                    if (inp) {
+                        inp.value = paste[i];
+                    }
+                }
+                const lastFilled = Math.min(paste.length, 3);
+                const lastInput = document.querySelector(`[data-lock="${lock}"][data-pos="${lastFilled}"]`);
+                if (lastInput) lastInput.focus();
+            });
+        });
+
+        function checkLock(num) {
+            if (lockStates[num]) return;
+
+            const d1 = document.getElementById(`lock${num}-d1`).value;
+            const d2 = document.getElementById(`lock${num}-d2`).value;
+            const d3 = document.getElementById(`lock${num}-d3`).value;
+            const userCode = d1 + d2 + d3;
+            const errorMsg = document.getElementById(`error${num}`);
+            const inputs = [
+                document.getElementById(`lock${num}-d1`),
+                document.getElementById(`lock${num}-d2`),
+                document.getElementById(`lock${num}-d3`)
+            ];
+
+            if (userCode.length < 3) {
+                errorMsg.textContent = 'Введите все три цифры!';
+                errorMsg.classList.add('visible');
+                return;
+            }
+
+            if (userCode === codes[num]) {
+                lockStates[num] = true;
+                inputs.forEach(inp => {
+                    inp.classList.remove('wrong');
+                    inp.classList.add('correct');
+                });
+                errorMsg.classList.remove('visible');
+
+                const card = document.getElementById(`lock${num}`);
+                card.classList.remove('locked');
+                card.classList.add('unlocked');
+                card.classList.add('success-flash');
+                setTimeout(() => card.classList.remove('success-flash'), 600);
+
+                document.getElementById(`status${num}`).className = 'lock-status status-unlocked';
+                document.getElementById(`status${num}`).textContent = '🟢 Открыт';
+
+                document.getElementById(`final${num}`).textContent = codes[num];
+                document.getElementById(`final${num}`).classList.add('filled');
+
+                updateProgress();
+            } else {
+                errorMsg.textContent = 'Неверный код. Попробуйте ещё раз!';
+                errorMsg.classList.add('visible');
+                inputs.forEach(inp => {
+                    inp.classList.remove('correct');
+                    inp.classList.add('wrong');
+                    setTimeout(() => inp.classList.remove('wrong'), 500);
+                });
+            }
+        }
+
+        function updateProgress() {
+            const count = Object.values(lockStates).filter(v => v).length;
+            document.getElementById('progressText').textContent = `${count} / 4 замков`;
+            document.getElementById('progressFill').style.width = `${(count / 4) * 100}%`;
+        }
+
+        function toggleHint(num) {
+            const hint = document.getElementById(`hint${num}`);
+            hint.classList.toggle('visible');
+        }
+
+        document.getElementById('sumInput').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        document.getElementById('sumInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') checkFinal();
+        });
+
+        function checkFinal() {
+            const allUnlocked = Object.values(lockStates).every(v => v);
+            if (!allUnlocked) {
+                document.getElementById('finalError').textContent = 'Сначала откройте все 4 замка!';
+                document.getElementById('finalError').classList.add('visible');
+                return;
+            }
+
+            const sum = parseInt(document.getElementById('sumInput').value);
+            
+            if (sum === 980) {
+                showVictory();
+            } else {
+                document.getElementById('finalError').textContent = 'Неверная сумма. Проверьте все коды!';
+                document.getElementById('finalError').classList.add('visible');
+                document.getElementById('sumInput').classList.add('wrong');
+                setTimeout(() => document.getElementById('sumInput').classList.remove('wrong'), 500);
+            }
+        }
+
+        function showVictory() {
+            document.getElementById('victorySum').textContent = '980';
+            document.getElementById('victoryOverlay').classList.add('visible');
+            createParticles();
+        }
+
+        function closeVictory() {
+            document.getElementById('victoryOverlay').classList.remove('visible');
+        }
+
+        function createParticles() {
+            const container = document.getElementById('particles');
+            container.innerHTML = '';
+            const colors = ['#06b6d4', '#10b981', '#8b5cf6', '#f59e0b', '#f43f5e', '#ffffff'];
+            
+            for (let i = 0; i < 80; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                p.style.animationDelay = Math.random() * 2 + 's';
+                p.style.animationDuration = (2 + Math.random() * 3) + 's';
+                p.style.width = (4 + Math.random() * 8) + 'px';
+                p.style.height = p.style.width;
+                container.appendChild(p);
+            }
+
+            setTimeout(() => { container.innerHTML = ''; }, 5000);
+        }
+    </script>
+</body>
+</html>
+```
