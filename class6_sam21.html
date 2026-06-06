@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Пропавший циферблат — Детективный квест (полная версия)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.0.18/index.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/playfair-display@5.0.13/index.min.css">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0e0e14;
+    --bg2: #17171f;
+    --card: #1d1d28;
+    --gold: #d4af37;
+    --gold-dim: #8a7020;
+    --text: #e8e6e1;
+    --muted: #8a8a95;
+    --green: #4ade80;
+    --red: #f87171;
+    --accent: #c9a961;
+  }
+  html, body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; line-height: 1.6; }
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse at top, #1a1a2e 0%, #0e0e14 60%),
+      repeating-linear-gradient(0deg, transparent 0 39px, rgba(255,255,255,0.015) 39px 40px);
+    padding: 40px 20px 80px;
+  }
+  .container { max-width: 950px; margin: 0 auto; }
+
+  header {
+    text-align: center;
+    padding: 40px 20px 30px;
+    border-bottom: 1px solid rgba(212,175,55,0.3);
+    margin-bottom: 40px;
+    position: relative;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 80px; height: 3px;
+    background: var(--gold);
+  }
+  .stamp {
+    display: inline-block;
+    border: 2px solid var(--red);
+    color: var(--red);
+    padding: 4px 14px;
+    font-size: 12px;
+    letter-spacing: 3px;
+    transform: rotate(-3deg);
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    color: var(--gold);
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    text-shadow: 0 0 30px rgba(212,175,55,0.3);
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    font-style: italic;
+  }
+
+  .legend {
+    background: var(--card);
+    border-left: 4px solid var(--gold);
+    padding: 25px 30px;
+    margin-bottom: 40px;
+    border-radius: 4px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  }
+  .legend h2 {
+    font-family: 'Playfair Display', serif;
+    color: var(--gold);
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+  }
+  .legend p { margin-bottom: 10px; color: #d0cec8; }
+
+  .task {
+    background: var(--card);
+    border: 1px solid rgba(212,175,55,0.15);
+    border-radius: 8px;
+    padding: 30px;
+    margin-bottom: 25px;
+    position: relative;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .task:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+  }
+  .task-number {
+    position: absolute;
+    top: -15px;
+    left: 30px;
+    background: var(--bg);
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    font-weight: bold;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+  }
+  .task h3 {
+    font-family: 'Playfair Display', serif;
+    color: var(--gold);
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+    padding-left: 40px;
+  }
+  .task .story {
+    color: #c8c6bf;
+    font-style: italic;
+    margin-bottom: 15px;
+    padding-left: 10px;
+    border-left: 2px solid rgba(212,175,55,0.3);
+  }
+
+  .hint-wrapper { margin: 15px 0; }
+  .hint-trigger {
+    background: rgba(212,175,55,0.12);
+    border: 1px dashed var(--gold-dim);
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--gold);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: 0.2s;
+    user-select: none;
+  }
+  .hint-trigger:hover { background: rgba(212,175,55,0.25); transform: scale(0.99); }
+  .hint-trigger .icon { font-size: 16px; }
+  .hint-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease-out, opacity 0.25s;
+    opacity: 0;
+    background: rgba(0,0,0,0.2);
+    border-left: 2px solid var(--gold-dim);
+    margin-top: 0;
+    padding: 0 12px;
+    border-radius: 4px;
+  }
+  .hint-content.show {
+    max-height: 280px;
+    opacity: 1;
+    margin-top: 12px;
+    padding: 12px 12px;
+  }
+  .hint-content p { font-size: 13px; color: #d4c9a0; margin: 0; }
+
+  .columns-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+  }
+  .col-option {
+    background: var(--bg2);
+    border: 2px solid rgba(212,175,55,0.2);
+    border-radius: 6px;
+    padding: 20px 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    position: relative;
+  }
+  .col-option:hover { border-color: var(--gold); transform: scale(1.03); }
+  .col-option.selected { border-color: var(--gold); background: rgba(212,175,55,0.1); }
+  .col-option.correct { border-color: var(--green); background: rgba(74,222,128,0.08); }
+  .col-option.wrong { border-color: var(--red); background: rgba(248,113,113,0.08); }
+  .col-option .label {
+    position: absolute;
+    top: 8px; left: 10px;
+    color: var(--gold);
+    font-weight: bold;
+  }
+  .stack {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    line-height: 1.4;
+    letter-spacing: 2px;
+    color: var(--text);
+    text-align: right;
+    padding-right: 10px;
+  }
+  .stack .line { position: relative; }
+  .stack .line2::after {
+    content: '';
+    position: absolute;
+    bottom: 14px;
+    right: 0;
+    height: 2px;
+    background: var(--text);
+    width: 50%;
+  }
+  .stack .plus {
+    position: absolute;
+    left: 120px;
+    bottom: 40px;
+    color: var(--gold);
+  }
+
+  .calc-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 12px 0;
+    font-size: 18px;
+  }
+  .calc-row .expr {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text);
+    min-width: 180px;
+  }
+  .calc-row input {
+    background: var(--bg2);
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+    padding: 8px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    border-radius: 4px;
+    width: 140px;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .calc-row input:focus { border-color: var(--gold); }
+  .calc-row input.correct { border-color: var(--green); color: var(--green); }
+  .calc-row input.wrong { border-color: var(--red); color: var(--red); }
+  .calc-row .feedback { font-size: 13px; min-height: 20px; }
+  .calc-row .feedback.ok { color: var(--green); }
+  .calc-row .feedback.err { color: var(--red); }
+
+  .directions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin: 20px 0;
+  }
+  .dir-card {
+    background: var(--bg2);
+    border: 2px solid rgba(212,175,55,0.2);
+    border-radius: 8px;
+    padding: 15px;
+  }
+  .dir-card .letter {
+    color: var(--gold);
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .dir-card .desc {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .dir-card .calc-row { margin: 5px 0; }
+  .dir-card .calc-row .expr { font-size: 13px; min-width: auto; }
+  .dir-card .calc-row input { width: 100px; font-size: 13px; }
+
+  .equation-box {
+    background: var(--bg2);
+    border: 1px dashed var(--gold-dim);
+    padding: 20px;
+    border-radius: 6px;
+    margin: 15px 0;
+    text-align: center;
+    font-size: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--gold);
+  }
+
+  .trap-display {
+    text-align: center;
+    padding: 25px;
+    background: linear-gradient(135deg, #1a1a2e, #0e0e14);
+    border: 1px solid var(--red);
+    border-radius: 6px;
+    margin: 15px 0;
+    font-size: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text);
+    position: relative;
+    overflow: hidden;
+  }
+  .trap-display::before {
+    content: '⚠ ЛАЗЕРНАЯ СИГНАЛИЗАЦИЯ';
+    position: absolute;
+    top: 8px; left: 50%; transform: translateX(-50%);
+    color: var(--red);
+    font-size: 11px;
+    letter-spacing: 3px;
+  }
+  .trap-display .zeros {
+    color: var(--red);
+    font-size: 14px;
+    margin: 10px 0;
+  }
+
+  .btn {
+    background: var(--gold);
+    color: #0e0e14;
+    border: none;
+    padding: 10px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: bold;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+    margin-top: 10px;
+  }
+  .btn:hover { background: #e8c547; transform: translateY(-1px); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-secondary {
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+  }
+  .btn-secondary:hover { background: rgba(212,175,55,0.1); }
+
+  .final {
+    background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(212,175,55,0.02));
+    border: 2px solid var(--gold);
+    padding: 30px;
+    border-radius: 8px;
+    margin-top: 30px;
+  }
+  .final h3 {
+    font-family: 'Playfair Display', serif;
+    color: var(--gold);
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  .final-list {
+    list-style: none;
+    margin: 15px 0;
+  }
+  .final-list li {
+    padding: 8px 0;
+    border-bottom: 1px dashed rgba(212,175,55,0.2);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .final-list li:last-child { border: none; }
+  .final-list .label { color: var(--muted); }
+  .final-list .value { color: var(--gold); font-weight: bold; }
+
+  .status {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-size: 12px;
+    margin-left: 10px;
+  }
+  .status.ok { background: rgba(74,222,128,0.2); color: var(--green); }
+  .status.err { background: rgba(248,113,113,0.2); color: var(--red); }
+  .status.pending { background: rgba(212,175,55,0.15); color: var(--gold); }
+
+  .progress {
+    position: sticky;
+    top: 10px;
+    background: var(--card);
+    border: 1px solid rgba(212,175,55,0.3);
+    border-radius: 6px;
+    padding: 12px 20px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+  .progress .bar {
+    flex: 1;
+    height: 6px;
+    background: var(--bg2);
+    border-radius: 3px;
+    margin: 0 15px;
+    overflow: hidden;
+  }
+  .progress .bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+    transition: width 0.5s;
+    width: 0%;
+  }
+  .progress .count { color: var(--gold); font-weight: bold; min-width: 80px; text-align: right; }
+
+  .report {
+    background: #f5f0e1;
+    color: #1a1a1a;
+    padding: 25px;
+    border-radius: 4px;
+    margin-top: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    position: relative;
+  }
+  .report::before {
+    content: 'СЕКРЕТНО';
+    position: absolute;
+    top: 10px; right: 15px;
+    color: var(--red);
+    font-size: 11px;
+    letter-spacing: 2px;
+    border: 1px solid var(--red);
+    padding: 2px 8px;
+  }
+  .report h4 {
+    color: #3a3a3a;
+    margin-bottom: 12px;
+    border-bottom: 2px solid #3a3a3a;
+    padding-bottom: 6px;
+  }
+  .report .line { margin: 6px 0; font-size: 14px; }
+  .report .line b { color: #8a0000; }
+
+  .hidden { display: none; }
+  .feedback-msg { margin-top:12px; font-size:14px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="stamp">ДЕЛО № 07-2026</div>
+    <h1>ПРОПАВШИЙ ЦИФЕРБЛАТ</h1>
+    <div class="subtitle">Детективный квест по десятичным дробям</div>
+  </header>
+
+  <div class="legend">
+    <h2>📜 Легенда</h2>
+    <p>В городском музее десятичных дробей украдена старинная золотая запятая — артефакт, без которого дроби теряют смысл.</p>
+    <p>Детектив нашёл страницу чьих-то расчётов — похоже, это чёрновик преступника. Реши примеры — и узнаешь, где тайник.</p>
+    <p style="margin-top: 8px;">🔐 <strong style="color: var(--gold);">Подсказки</strong> спрятаны за дверью: нажми на жёлтую кнопку — услышишь скрип и откроешь улику.</p>
+  </div>
+
+  <div class="progress">
+    <span style="color:var(--gold); font-size:13px;">РАССЛЕДОВАНИЕ</span>
+    <div class="bar"><div class="bar-fill" id="progressBar"></div></div>
+    <span class="count" id="progressCount">0 / 5</span>
+  </div>
+
+  <!-- ЗАДАНИЕ 1 -->
+  <div class="task" id="task1">
+    <div class="task-number">1</div>
+    <h3>Камера хранения — листок подозреваемого</h3>
+    <p class="story">«Только один вариант записан верно для сложения столбиком. Остальные сдвинули разряды.»</p>
+    <p>Укажите верную запись сложения чисел <b style="color:var(--gold)">5,32</b> и <b style="color:var(--gold)">21,8</b> столбиком:</p>
+
+    <div class="columns-options">
+      <div class="col-option" data-opt="a" onclick="selectCol('a')">
+       <span class="label">а)</span>
+        <div class="stack">
+          <div class="line">5,32</div><span class="plus">+</span>
+          <div class="line2">21,&nbsp;8</div>
+          <!-- <div style="margin-top:8px; font-size:12px; color:var(--muted)">5 над 2, 3 над 1</div> -->
+        </div>
+      </div>
+      <div class="col-option" data-opt="b" onclick="selectCol('b')">
+        <span class="label">б)</span>
+        <div class="stack">
+          <div class="line">5,32</div><span class="plus">+</span>
+          <div class="line2">21,8</div>
+          <!-- <div style="margin-top:8px; font-size:12px; color:var(--muted)">две запятые</div> -->
+        </div>
+      </div>
+      <div class="col-option" data-opt="c" onclick="selectCol('c')">
+        <span class="label">в)</span>
+        <div class="stack">
+          <div class="line">&nbsp;&nbsp;&nbsp;5,32</div><span class="plus">+</span>
+          <div class="line2">21,8&nbsp;</div>
+          <!-- <div style="margin-top:8px; font-size:12px; color:var(--muted)">запятая под запятой ✓</div> -->
+        </div>
+      </div>
+    </div>
+
+    <div class="hint-wrapper">
+      <div class="hint-trigger" onclick="playDoorCreakAndToggle(this)">
+        <span class="icon">🚪</span> Открыть дверь с правилом
+      </div>
+      <div class="hint-content">
+        <p>📐 При сложении десятичных дробей столбиком запятая должна быть строго под запятой, а разряд под разрядом. Верная запись — вариант <strong style="color:var(--gold)">в)</strong>.</p>
+      </div>
+    </div>
+
+    <button class="btn" onclick="checkTask1()">Проверить свидетеля</button>
+    <span class="status pending" id="status1">ожидание</span>
+    <div class="feedback-msg" id="msg1"></div>
+  </div>
+
+  <!-- ЗАДАНИЕ 2 -->
+  <div class="task" id="task2">
+    <div class="task-number">2</div>
+    <h3>Две улики — вычисления столбиком</h3>
+    <p class="story">Преступник наследил цифрами. Найди:</p>
+
+    <div class="calc-row">
+      <span class="expr">а) 2,5 + 0,13 =</span>
+      <input type="text" id="ans2a" placeholder="?" oninput="autoCheck2()">
+      <span class="feedback" id="fb2a"></span>
+    </div>
+    <div style="font-size:13px; color:var(--muted); margin-left:10px;">→ это номер этажа тайника</div>
+
+    <div class="calc-row">
+      <span class="expr">б) 18,4 − 6,315 =</span>
+      <input type="text" id="ans2b" placeholder="?" oninput="autoCheck2()">
+      <span class="feedback" id="fb2b"></span>
+    </div>
+    <div style="font-size:13px; color:var(--muted); margin-left:10px;">→ первые 3 цифры после запятой = код сейфа</div>
+
+    <div class="hint-wrapper">
+      <div class="hint-trigger" onclick="playDoorCreakAndToggle(this)">
+        <span class="icon">🚪</span> Открыть дверь с подсказкой
+      </div>
+      <div class="hint-content">
+       <p>⚙️ Выравнивай запятые!</p>  <!--  2,5 = 2,50; 18,4 = 18,400. Тогда 2,50 + 0,13 = <strong>2,63</strong>. 18,400 − 6,315 = <strong>12,085</strong> (код 085).-->
+      </div>
+    </div>
+
+    <span class="status pending" id="status2">ожидание</span>
+  </div>
+
+  <!-- ЗАДАНИЕ 3 -->
+  <div class="task" id="task3">
+    <div class="task-number">3</div>
+    <h3>Показание свидетеля — уравнение</h3>
+    <p class="story">«Я задумал число, увеличил его на 5,7, из суммы вычел 0,38 и получил 11,7».</p>
+
+    <!-- <div class="equation-box">
+      x + 5,7 − 0,38 = 11,7
+    </div> -->
+
+    <div class="calc-row">
+      
+      <input type="text" id="ans3" placeholder="?" oninput="autoCheck3()">
+      <span class="feedback" id="fb3"></span>
+    </div>
+    <div style="font-size:13px; color:var(--muted); margin-left:10px;">→ это номер камеры хранения, где лежит украденная запятая</div>
+
+    <div class="hint-wrapper">
+      <div class="hint-trigger" onclick="playDoorCreakAndToggle(this)">
+        <span class="icon">🚪</span> Открыть дверь с уликой
+      </div>
+      <div class="hint-content">
+        <p>💡 x + 5,7 − 0,38 = 11,7</p>
+      </div>
+    </div>
+
+    <span class="status pending" id="status3">ожидание</span>
+  </div>
+
+  <!-- ЗАДАНИЕ 4 - правильный ответ 399996 -->
+  <div class="task" id="task4">
+    <div class="task-number">4</div>
+    <h3>Ловушка! — вычитание почти равных</h3>
+    <p class="story">В коде сейфа написано:</p>
+
+    <div class="trap-display">
+       <div class="zeros">15 цифр &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 20 цифр</div>
+      <div>0,000…04 &nbsp;−&nbsp; 0,000…04</div>
+    </div>
+
+    <p style="margin:15px 0;">Подумай: чему равна разность, если <strong style="color:var(--red)">количество нулей разное</strong>?</p>
+
+    <div class="calc-row">
+      <span class="expr">Разность =</span>
+      <input type="text" id="ans4" placeholder="?" oninput="autoCheck4()">
+      <span class="feedback" id="fb4"></span>
+    </div>
+    <div style="font-size:13px; color:var(--muted); margin-left:10px;">→ введи число без нулей (например, 89765)</div>
+
+    <div class="hint-wrapper">
+      <div class="hint-trigger" onclick="playDoorCreakAndToggle(this)">
+        <span class="icon">🚪</span> Открыть дверь-ловушку
+      </div>
+      <div class="hint-content">
+         <p>⚠️ Количество нулей <strong>разное</strong>!<!-- Первое число: 0,000...04 (15 нулей) = 4×10⁻¹⁶, второе: 0,000...04 (20 нулей) = 4×10⁻²¹. Разность: 4×10⁻¹⁶ − 4×10⁻²¹ = 4×10⁻²¹ × (10⁵ − 1) = 3,99996×10⁻¹⁶ = 0,000...0399996. Ответ в виде числа без нулей: <strong style="color:var(--green)">399996</strong>. --></p>
+      </div>
+    </div>
+
+    <span class="status pending" id="status4">ожидание</span>
+  </div>
+
+  <!-- ЗАДАНИЕ 5 - все 4 варианта -->
+  <div class="task" id="task5">
+    <div class="task-number">5</div>
+    <h3>Погоня — движение велосипедистов</h3>
+    <p class="story">Два подозреваемых уехали на велосипедах. Расстояние между ними — 32 км. Скорости: 12,5 км/ч и 15,78 км/ч.</p>
+    <p>Вычисли расстояние между ними через 1 час для каждого случая:</p>
+
+    <div class="directions-grid">
+      <div class="dir-card">
+        <span class="letter">а) навстречу друг другу</span>
+        <div class="desc">скорость сближения = сумма скоростей</div>
+        <div class="calc-row">
+          <span class="expr">Расстояние =</span>
+          <input type="text" id="ans5a" placeholder="?" oninput="autoCheck5()">
+          <span class="feedback" id="fb5a"></span>
+        </div>
+      </div>
+      <div class="dir-card">
+        <span class="letter">б) в противоположные стороны</span>
+        <div class="desc">скорость удаления = сумма скоростей</div>
+        <div class="calc-row">
+          <span class="expr">Расстояние =</span>
+          <input type="text" id="ans5b" placeholder="?" oninput="autoCheck5()">
+          <span class="feedback" id="fb5b"></span>
+        </div>
+      </div>
+      <div class="dir-card">
+        <span class="letter">в) в одном направлении (быстрый догоняет)</span>
+        <div class="desc">скорость сближения = разность скоростей</div>
+        <div class="calc-row">
+          <span class="expr">Расстояние =</span>
+          <input type="text" id="ans5c" placeholder="?" oninput="autoCheck5()">
+          <span class="feedback" id="fb5c"></span>
+        </div>
+      </div>
+      <div class="dir-card">
+        <span class="letter">г) в одном направлении (медленный впереди)</span>
+        <div class="desc">скорость удаления = разность скоростей</div>
+        <div class="calc-row">
+          <span class="expr">Расстояние =</span>
+          <input type="text" id="ans5d" placeholder="?" oninput="autoCheck5()">
+          <span class="feedback" id="fb5d"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hint-wrapper">
+      <div class="hint-trigger" onclick="playDoorCreakAndToggle(this)">
+        <span class="icon">🚪</span> Открыть дверь с формулами
+      </div>
+      <div class="hint-content">
+        <p>🚴 Скорость сближения/удаления = сумма или разность скоростей.<br>
+        а) навстречу: 32 − (12,5+15,78) = <br>
+        б) в противоположные: 32 + (12,5+15,78) = <br>
+        в) быстрый догоняет: 32 − (15,78−12,5) = <br>
+        г) медленный впереди: 32 + (15,78−12,5) = </p>
+      </div>
+    </div>
+
+    <span class="status pending" id="status5">ожидание</span>
+  </div>
+
+  <!-- ФИНАЛ -->
+  <div class="final" id="finalBlock">
+    <h3>🔎 Финальный отчёт начальнику полиции</h3>
+    <p style="text-align:center; color:var(--muted); margin-bottom:20px;">
+      Запиши: номер этажа, код сейфа, камеру, разность-ловушку и все 4 расстояния погони.
+    </p>
+
+    <ul class="final-list">
+      <li><span class="label">Номер этажа тайника (Задание 2а):</span> <span class="value" id="fFloor">—</span></li>
+      <li><span class="label">Код сейфа (Задание 2б):</span> <span class="value" id="fCode">—</span></li>
+      <li><span class="label">Камера хранения (Задание 3):</span> <span class="value" id="fRoom">—</span></li>
+      <li><span class="label">Разность-ловушка (Задание 4):</span> <span class="value" id="fTrap">—</span></li>
+      <li><span class="label">Навстречу (а):</span> <span class="value" id="f5a">—</span></li>
+      <li><span class="label">Противоположно (б):</span> <span class="value" id="f5b">—</span></li>
+      <li><span class="label">Быстрый догоняет (в):</span> <span class="value" id="f5c">—</span></li>
+      <li><span class="label">Медленный впереди (г):</span> <span class="value" id="f5d">—</span></li>
+    </ul>
+
+    <button class="btn" onclick="generateReport()" id="reportBtn" disabled>Составить отчёт</button>
+    <button class="btn btn-secondary" onclick="resetAll()" style="margin-left:10px;">Начать заново</button>
+
+    <div class="report hidden" id="reportBlock">
+      <h4>РАПОРТ ДЕТЕКТИВА</h4>
+      <div class="line"><b>Дело:</b> Кража золотой запятой из музея десятичных дробей</div>
+      <div class="line"><b>Номер этажа тайника:</b> <span id="rFloor"></span></div>
+      <div class="line"><b>Код сейфа:</b> <span id="rCode"></span></div>
+      <div class="line"><b>Камера хранения:</b> № <span id="rRoom"></span></div>
+      <div class="line"><b>Лазерная ловушка обезврежена:</b> разность = <span id="rTrap"></span></div>
+      <div class="line" style="margin-top:15px;"><b>Результаты погони:</b></div>
+      <div class="line">а) навстречу: <span id="r5a"></span> км</div>
+      <div class="line">б) в противоположные стороны: <span id="r5b"></span> км</div>
+      <div class="line">в) быстрый догоняет: <span id="r5c"></span> км</div>
+      <div class="line">г) медленный впереди: <span id="r5d"></span> км</div>
+      <div class="line" style="margin-top:15px; padding-top:10px; border-top:1px solid #3a3a3a;"><b>Вывод:</b> <span id="rConclusion"></span></div>
+    </div>
+  </div>
+
+</div><script>
+  // Звук скрипа открывающейся двери
+function playDoorCreak() {
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const now = audioCtx.currentTime;
+        const bufferSize = 4096;
+        const noiseNode = audioCtx.createScriptProcessor(bufferSize, 1, 1);
+        noiseNode.onaudioprocess = function(e) {
+            const output = e.outputBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                const decay = Math.max(0, 1 - (now + i / audioCtx.sampleRate - now) * 12);
+                output[i] = (Math.random() * 2 - 1) * 0.12 * decay;
+            }
+        };
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+        noiseNode.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        const osc = audioCtx.createOscillator();
+        const oscGain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = 180;
+        oscGain.gain.setValueAtTime(0.07, now);
+        oscGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+        osc.connect(oscGain);
+        oscGain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(now + 0.5);
+        
+        setTimeout(() => { try { noiseNode.disconnect(); } catch(e){} }, 500);
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+    } catch(e) { console.log("звук скрипа недоступен"); }
+}
+
+// Единая функция для открытия подсказок (работает и со старыми, и с новыми)
+function playSoundAndToggle(trigger) {
+    // Воспроизводим звук скрипа двери
+    playDoorCreak();
+    // Находим родительский блок .hint-wrapper, затем .hint-content
+    const wrapper = trigger.closest('.hint-wrapper');
+    const content = wrapper.querySelector('.hint-content');
+    if (content) {
+        content.classList.toggle('show');
+    }
+}
+
+// Алиас для обратной совместимости (если где-то используется playDoorCreakAndToggle)
+function playDoorCreakAndToggle(trigger) {
+    playSoundAndToggle(trigger);
+}
+
+const state = {
+    task1: null,
+    task2a: null, task2b: null,
+    task3: null,
+    task4: null,
+    task5a: null, task5b: null, task5c: null, task5d: null
+};
+
+function updateFinalReport() {
+    const floor = state.task2a ? '2' : '—';
+    const code = state.task2b ? '085' : '—';
+    const room = state.task3 ? '6,38' : '—';
+    const trap = state.task4 === 399996 ? '399996' : '—';
+    const valA = state.task5a ? '3,72' : '—';
+    const valB = state.task5b ? '60,28' : '—';
+    const valC = state.task5c ? '28,72' : '—';
+    const valD = state.task5d ? '35,28' : '—';
+
+    const fFloor = document.getElementById('fFloor');
+    const fCode = document.getElementById('fCode');
+    const fRoom = document.getElementById('fRoom');
+    const fTrap = document.getElementById('fTrap');
+    const f5a = document.getElementById('f5a');
+    const f5b = document.getElementById('f5b');
+    const f5c = document.getElementById('f5c');
+    const f5d = document.getElementById('f5d');
+    
+    if (fFloor) fFloor.textContent = floor;
+    if (fCode) fCode.textContent = code;
+    if (fRoom) fRoom.textContent = room;
+    if (fTrap) fTrap.textContent = trap;
+    if (f5a) f5a.textContent = valA;
+    if (f5b) f5b.textContent = valB;
+    if (f5c) f5c.textContent = valC;
+    if (f5d) f5d.textContent = valD;
+
+    window.reportData = { floor, code, room, trap, valA, valB, valC, valD };
+}
+
+function updateProgress() {
+    let done = 0;
+    if (state.task1) done++;
+    if (state.task2a && state.task2b) done++;
+    if (state.task3) done++;
+    if (state.task4 === 399996) done++;
+    if (state.task5a && state.task5b && state.task5c && state.task5d) done++;
+    
+    const pct = (done / 5) * 100;
+    const progressBar = document.getElementById('progressBar');
+    const progressCount = document.getElementById('progressCount');
+    const reportBtn = document.getElementById('reportBtn');
+    
+    if (progressBar) progressBar.style.width = pct + '%';
+    if (progressCount) progressCount.textContent = done + ' / 5';
+    if (reportBtn) reportBtn.disabled = done < 5;
+    
+    if (done === 5) updateFinalReport();
+}
+
+function selectCol(opt) {
+    document.querySelectorAll('.col-option').forEach(el => el.classList.remove('selected'));
+    const selected = document.querySelector(`.col-option[data-opt="${opt}"]`);
+    if (selected) selected.classList.add('selected');
+    state.task1 = opt;
+}
+
+function checkTask1() {
+    const msg = document.getElementById('msg1');
+    const status = document.getElementById('status1');
+    if (!state.task1) {
+        if (msg) msg.innerHTML = '<span style="color:var(--red)">⚠ Выбери один из вариантов!</span>';
+        return;
+    }
+    document.querySelectorAll('.col-option').forEach(el => el.classList.remove('correct', 'wrong'));
+    if (state.task1 === 'c') {
+        const correctEl = document.querySelector('.col-option[data-opt="c"]');
+        if (correctEl) correctEl.classList.add('correct');
+        if (status) { status.className = 'status ok'; status.textContent = 'верно'; }
+        if (msg) msg.innerHTML = '<span style="color:var(--green)">✓ Вариант <b>в)</b> — верный!</span>';
+    } else {
+        const wrongEl = document.querySelector(`.col-option[data-opt="${state.task1}"]`);
+        const correctEl = document.querySelector('.col-option[data-opt="c"]');
+        if (wrongEl) wrongEl.classList.add('wrong');
+        if (correctEl) correctEl.classList.add('correct');
+        if (status) { status.className = 'status err'; status.textContent = 'ошибка'; }
+        if (msg) msg.innerHTML = '<span style="color:var(--red)">✗ Неверно. Правильный ответ — <b>в)</b>.</span>';
+    }
+    updateProgress();
+}
+
+function normalizeNum(s) { return s.replace(',', '.').replace(/\s/g, ''); }
+
+function autoCheck2() {
+    const a = normalizeNum(document.getElementById('ans2a')?.value || '');
+    const b = normalizeNum(document.getElementById('ans2b')?.value || '');
+    const inpA = document.getElementById('ans2a');
+    const inpB = document.getElementById('ans2b');
+    const fb2a = document.getElementById('fb2a');
+    const fb2b = document.getElementById('fb2b');
+
+    if (a === '2.63') {
+        if (inpA) inpA.className = 'correct';
+        if (fb2a) { fb2a.className = 'feedback ok'; fb2a.textContent = '✓ 2,63 — этаж 2'; }
+        state.task2a = 2.63;
+    } else if (a.length > 0) {
+        if (inpA) inpA.className = 'wrong';
+        if (fb2a) { fb2a.className = 'feedback err'; fb2a.textContent = '✗ 2,50 + 0,13'; }
+        state.task2a = null;
+    } else { if (inpA) inpA.className = ''; if (fb2a) fb2a.textContent = ''; state.task2a = null; }
+
+    if (b === '12.085') {
+        if (inpB) inpB.className = 'correct';
+        if (fb2b) { fb2b.className = 'feedback ok'; fb2b.textContent = '✓ 12,085 — код 085'; }
+        state.task2b = 12.085;
+    } else if (b.length > 0) {
+        if (inpB) inpB.className = 'wrong';
+        if (fb2b) { fb2b.className = 'feedback err'; fb2b.textContent = '✗ 18,400 − 6,315'; }
+        state.task2b = null;
+    } else { if (inpB) inpB.className = ''; if (fb2b) fb2b.textContent = ''; state.task2b = null; }
+
+    const st = document.getElementById('status2');
+    if (state.task2a && state.task2b) { if (st) { st.className = 'status ok'; st.textContent = 'верно'; } }
+    else { if (st) { st.className = 'status pending'; st.textContent = 'ожидание'; } }
+    updateProgress();
+}
+
+function autoCheck3() {
+    const v = normalizeNum(document.getElementById('ans3')?.value || '');
+    const fb = document.getElementById('fb3');
+    const inp = document.getElementById('ans3');
+    const status3 = document.getElementById('status3');
+    if (v === '6.38') {
+        if (inp) inp.className = 'correct';
+        if (fb) { fb.className = 'feedback ok'; fb.textContent = '✓ 6,38'; }
+        state.task3 = 6.38;
+        if (status3) { status3.className = 'status ok'; status3.textContent = 'верно'; }
+    } else if (v.length > 0) {
+        if (inp) inp.className = 'wrong';
+        if (fb) { fb.className = 'feedback err'; fb.textContent = '✗ x = 11,7 − 5,7 + 0,38'; }
+        state.task3 = null;
+        if (status3) { status3.className = 'status err'; status3.textContent = 'ошибка'; }
+    } else {
+        if (inp) inp.className = '';
+        if (fb) fb.textContent = '';
+        state.task3 = null;
+        if (status3) { status3.className = 'status pending'; status3.textContent = 'ожидание'; }
+    }
+    updateProgress();
+}
+
+function autoCheck4() {
+    const v = normalizeNum(document.getElementById('ans4')?.value || '');
+    const fb = document.getElementById('fb4');
+    const inp = document.getElementById('ans4');
+    const status4 = document.getElementById('status4');
+    if (v === '399996') {
+        if (inp) inp.className = 'correct';
+        if (fb) { fb.className = 'feedback ok'; fb.textContent = '✓ Верно! Разность = 399996'; }
+        state.task4 = 399996;
+        if (status4) { status4.className = 'status ok'; status4.textContent = 'верно'; }
+    } else if (v === '0') {
+        if (inp) inp.className = 'wrong';
+        if (fb) { fb.className = 'feedback err'; fb.textContent = '✗ Количество нулей разное → числа не равны!'; }
+        state.task4 = null;
+        if (status4) { status4.className = 'status err'; status4.textContent = 'ошибка'; }
+    } else if (v.length > 0) {
+        if (inp) inp.className = 'wrong';
+        if (fb) { fb.className = 'feedback err'; fb.textContent = '✗ Попробуй ещё раз. Посмотри подсказку.'; }
+        state.task4 = null;
+        if (status4) { status4.className = 'status err'; status4.textContent = 'ошибка'; }
+    } else {
+        if (inp) inp.className = '';
+        if (fb) fb.textContent = '';
+        state.task4 = null;
+        if (status4) { status4.className = 'status pending'; status4.textContent = 'ожидание'; }
+    }
+    updateProgress();
+}
+
+function autoCheck5() {
+    const a = normalizeNum(document.getElementById('ans5a')?.value || '');
+    const b = normalizeNum(document.getElementById('ans5b')?.value || '');
+    const c = normalizeNum(document.getElementById('ans5c')?.value || '');
+    const d = normalizeNum(document.getElementById('ans5d')?.value || '');
+    
+    const fb5a = document.getElementById('fb5a');
+    const fb5b = document.getElementById('fb5b');
+    const fb5c = document.getElementById('fb5c');
+    const fb5d = document.getElementById('fb5d');
+    const inp5a = document.getElementById('ans5a');
+    const inp5b = document.getElementById('ans5b');
+    const inp5c = document.getElementById('ans5c');
+    const inp5d = document.getElementById('ans5d');
+    const status5 = document.getElementById('status5');
+
+    if (a === '3.72') {
+        if (inp5a) inp5a.className = 'correct';
+        if (fb5a) { fb5a.className = 'feedback ok'; fb5a.textContent = '✓ 3,72 км'; }
+        state.task5a = 3.72;
+    } else if (a.length > 0) {
+        if (inp5a) inp5a.className = 'wrong';
+        if (fb5a) { fb5a.className = 'feedback err'; fb5a.textContent = '✗ 32 − (12,5+15,78)'; }
+        state.task5a = null;
+    } else { if (inp5a) inp5a.className = ''; if (fb5a) fb5a.textContent = ''; state.task5a = null; }
+
+    if (b === '60.28') {
+        if (inp5b) inp5b.className = 'correct';
+        if (fb5b) { fb5b.className = 'feedback ok'; fb5b.textContent = '✓ 60,28 км'; }
+        state.task5b = 60.28;
+    } else if (b.length > 0) {
+        if (inp5b) inp5b.className = 'wrong';
+        if (fb5b) { fb5b.className = 'feedback err'; fb5b.textContent = '✗ 32 + (12,5+15,78)'; }
+        state.task5b = null;
+    } else { if (inp5b) inp5b.className = ''; if (fb5b) fb5b.textContent = ''; state.task5b = null; }
+
+    if (c === '28.72') {
+        if (inp5c) inp5c.className = 'correct';
+        if (fb5c) { fb5c.className = 'feedback ok'; fb5c.textContent = '✓ 28,72 км'; }
+        state.task5c = 28.72;
+    } else if (c.length > 0) {
+        if (inp5c) inp5c.className = 'wrong';
+        if (fb5c) { fb5c.className = 'feedback err'; fb5c.textContent = '✗ 32 − (15,78−12,5)'; }
+        state.task5c = null;
+    } else { if (inp5c) inp5c.className = ''; if (fb5c) fb5c.textContent = ''; state.task5c = null; }
+
+    if (d === '35.28') {
+        if (inp5d) inp5d.className = 'correct';
+        if (fb5d) { fb5d.className = 'feedback ok'; fb5d.textContent = '✓ 35,28 км'; }
+        state.task5d = 35.28;
+    } else if (d.length > 0) {
+        if (inp5d) inp5d.className = 'wrong';
+        if (fb5d) { fb5d.className = 'feedback err'; fb5d.textContent = '✗ 32 + (15,78−12,5)'; }
+        state.task5d = null;
+    } else { if (inp5d) inp5d.className = ''; if (fb5d) fb5d.textContent = ''; state.task5d = null; }
+
+    if (state.task5a && state.task5b && state.task5c && state.task5d) {
+        if (status5) { status5.className = 'status ok'; status5.textContent = 'верно'; }
+    } else {
+        if (status5) { status5.className = 'status pending'; status5.textContent = 'ожидание'; }
+    }
+    updateProgress();
+}
+
+function generateReport() {
+    updateFinalReport();
+    const data = window.reportData || {};
+    
+    const rFloor = document.getElementById('rFloor');
+    const rCode = document.getElementById('rCode');
+    const rRoom = document.getElementById('rRoom');
+    const rTrap = document.getElementById('rTrap');
+    const r5a = document.getElementById('r5a');
+    const r5b = document.getElementById('r5b');
+    const r5c = document.getElementById('r5c');
+    const r5d = document.getElementById('r5d');
+    const rConclusion = document.getElementById('rConclusion');
+    
+    if (rFloor) rFloor.textContent = data.floor || '—';
+    if (rCode) rCode.textContent = data.code || '—';
+    if (rRoom) rRoom.textContent = data.room || '—';
+    if (rTrap) rTrap.textContent = data.trap || '—';
+    if (r5a) r5a.textContent = data.valA || '—';
+    if (r5b) r5b.textContent = data.valB || '—';
+    if (r5c) r5c.textContent = data.valC || '—';
+    if (r5d) r5d.textContent = data.valD || '—';
+    
+    if (rConclusion) {
+        rConclusion.textContent = `Золотая запятая находится в камере хранения № ${data.room || '?'} на этаже ${data.floor || '?'}. Сейф открывается кодом ${data.code || '?'}. Лазерная ловушка обезврежена (разность = ${data.trap || '?'}). Дело раскрыто!`;
+    }
+    
+    const reportBlock = document.getElementById('reportBlock');
+    if (reportBlock) {
+        reportBlock.classList.remove('hidden');
+        reportBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+function resetAll() {
+    state.task1 = null;
+    state.task2a = null; state.task2b = null;
+    state.task3 = null;
+    state.task4 = null;
+    state.task5a = null; state.task5b = null; state.task5c = null; state.task5d = null;
+    
+    document.querySelectorAll('.col-option').forEach(el => el.classList.remove('selected', 'correct', 'wrong'));
+    document.querySelectorAll('input').forEach(el => { el.value = ''; el.className = ''; });
+    document.querySelectorAll('.feedback').forEach(el => el.textContent = '');
+    document.querySelectorAll('.status').forEach(el => { el.className = 'status pending'; el.textContent = 'ожидание'; });
+    
+    const msg1 = document.getElementById('msg1');
+    if (msg1) msg1.innerHTML = '';
+    
+    const reportBlock = document.getElementById('reportBlock');
+    if (reportBlock) reportBlock.classList.add('hidden');
+    
+    const finalFields = ['fFloor', 'fCode', 'fRoom', 'fTrap', 'f5a', 'f5b', 'f5c', 'f5d'];
+    finalFields.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = '—';
+    });
+    
+    window.reportData = null;
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+updateProgress();
+</script>
+
+</body>
+</html>
