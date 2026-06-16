@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тайна нулевого периметра</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #0a0c14;
+            --bg-card: #111827;
+            --bg-input: #1a1f2e;
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --accent-teal: #14b8a6;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #1e293b;
+            --glow-cyan: rgba(6, 182, 212, 0.3);
+            --glow-green: rgba(16, 185, 129, 0.3);
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image:
+                linear-gradient(rgba(6, 182, 212, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(6, 182, 212, 0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.12;
+            pointer-events: none;
+            z-index: 0;
+            animation: orbFloat 25s ease-in-out infinite;
+        }
+
+        .bg-orb-1 { width: 600px; height: 600px; background: var(--accent-cyan); top: -200px; left: -100px; }
+        .bg-orb-2 { width: 500px; height: 500px; background: var(--accent-purple); bottom: -200px; right: -100px; animation-delay: -8s; }
+        .bg-orb-3 { width: 350px; height: 350px; background: var(--accent-teal); top: 40%; left: 50%; transform: translate(-50%,-50%); animation-delay: -16s; }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(40px, -30px) scale(1.1); }
+            66% { transform: translate(-30px, 40px) scale(0.9); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 40px 20px 60px;
+        }
+
+        .intro-screen {
+            text-align: center;
+            animation: fadeIn 1s ease;
+        }
+
+        .intro-icon {
+            font-size: 72px;
+            margin-bottom: 24px;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(3deg); }
+        }
+
+        .intro-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple), var(--accent-teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .intro-legend {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            margin: 32px auto;
+            max-width: 600px;
+            text-align: left;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+        }
+
+        .intro-legend strong {
+            color: var(--accent-cyan);
+        }
+
+        .intro-rules {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 32px 0;
+        }
+
+        .rule-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            text-align: center;
+            min-width: 150px;
+        }
+
+        .rule-card .rule-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .rule-card .rule-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .rule-card .rule-text strong {
+            color: var(--accent-cyan);
+        }
+
+        .start-btn {
+            margin-top: 32px;
+            padding: 16px 48px;
+            border: none;
+            border-radius: 14px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: white;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .start-btn::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; right: 0; bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .start-btn:hover::after { left: 100%; }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(6, 182, 212, 0.4);
+        }
+
+        .quest-screen {
+            display: none;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .quest-screen.active { display: block; }
+        .intro-screen.hidden { display: none; }
+
+        .progress-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px 22px;
+            margin-bottom: 32px;
+            position: sticky;
+            top: 12px;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .progress-header span {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .progress-header .prog-count {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-cyan);
+            font-weight: 600;
+        }
+
+        .progress-dots {
+            display: flex;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        .prog-dot {
+            flex: 1;
+            height: 6px;
+            background: var(--bg-input);
+            border-radius: 3px;
+            transition: all 0.5s ease;
+        }
+
+        .prog-dot.completed {
+            background: var(--accent-green);
+            box-shadow: 0 0 8px var(--glow-green);
+        }
+
+        .prog-dot.active {
+            background: var(--accent-cyan);
+            box-shadow: 0 0 8px var(--glow-cyan);
+        }
+
+        .station-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 24px;
+            transition: all 0.5s ease;
+            animation: fadeInUp 0.6s ease both;
+        }
+
+        .station-card:nth-child(1) { animation-delay: 0.1s; }
+        .station-card:nth-child(2) { animation-delay: 0.2s; }
+        .station-card:nth-child(3) { animation-delay: 0.3s; }
+        .station-card:nth-child(4) { animation-delay: 0.4s; }
+        .station-card:nth-child(5) { animation-delay: 0.5s; }
+        .station-card:nth-child(6) { animation-delay: 0.6s; }
+
+        .station-card.locked { 
+            opacity: 0.5;
+            filter: blur(2px);
+            pointer-events: none;
+        }
+        
+        .station-card.completed { border-color: var(--accent-green); }
+
+        .station-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 20px 24px;
+            background: var(--bg-input);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .station-num {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .station-info { flex: 1; }
+
+        .station-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .station-topic {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .station-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-waiting {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-amber);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .status-active {
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+        }
+
+        .status-done {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .station-body {
+            padding: 24px;
+        }
+
+        .station-quote {
+            font-style: italic;
+            color: var(--text-secondary);
+            margin-bottom: 18px;
+            padding: 12px 16px;
+            background: rgba(6, 182, 212, 0.05);
+            border-left: 3px solid var(--accent-cyan);
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+        }
+
+        .station-task {
+            margin-bottom: 20px;
+            line-height: 1.8;
+            color: var(--text-primary);
+        }
+
+        .math-block {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(6, 182, 212, 0.06);
+            border: 1px solid rgba(6, 182, 212, 0.15);
+            border-radius: 10px;
+            padding: 18px;
+            margin: 16px 0;
+            text-align: center;
+            font-size: 1.15rem;
+            color: var(--accent-cyan);
+            line-height: 2.2;
+        }
+
+        .fraction {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 4px;
+            vertical-align: middle;
+        }
+
+        .fraction .num {
+            border-bottom: 2px solid var(--accent-cyan);
+            padding: 0 6px 2px;
+            line-height: 1.2;
+        }
+
+        .fraction .den {
+            padding: 2px 6px 0;
+            line-height: 1.2;
+        }
+
+        .sub-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 500px) {
+            .options-grid { grid-template-columns: 1fr; }
+        }
+
+        .option-btn {
+            padding: 14px 18px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--accent-cyan);
+            background: rgba(6, 182, 212, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .option-btn.selected {
+            border-color: var(--accent-cyan);
+            background: rgba(6, 182, 212, 0.15);
+            box-shadow: 0 0 20px var(--glow-cyan);
+        }
+
+        .option-btn.correct {
+            border-color: var(--accent-green) !important;
+            background: rgba(16, 185, 129, 0.15) !important;
+            box-shadow: 0 0 20px var(--glow-green) !important;
+        }
+
+        .option-btn.wrong {
+            border-color: var(--accent-rose) !important;
+            background: rgba(244, 63, 94, 0.1) !important;
+            animation: shake 0.5s ease;
+        }
+
+        .option-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+
+        .option-label {
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .option-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.05rem;
+        }
+
+        .option-digit {
+            font-size: 0.75rem;
+            color: var(--accent-amber);
+            margin-top: 2px;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-8px); }
+            40% { transform: translateX(8px); }
+            60% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
+        }
+
+        .solution-box {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(16, 185, 129, 0.06);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 12px;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .solution-box.visible { display: block; }
+
+        .solution-title {
+            font-weight: 700;
+            color: var(--accent-green);
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .solution-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .digit-reveal {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            border-radius: 12px;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .digit-reveal.visible { display: block; }
+
+        .digit-reveal .digit-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .digit-reveal .digit-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .final-section {
+            display: none;
+            margin-top: 40px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(6, 182, 212, 0.08));
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 20px;
+            padding: 36px 28px;
+            text-align: center;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .final-section.visible { display: block; }
+
+        .final-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .final-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 28px;
+        }
+
+        .code-display {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .code-digit-box {
+            width: 56px;
+            height: 68px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-input);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent-green);
+            transition: all 0.3s ease;
+        }
+
+        .code-digit-box.filled {
+            border-color: var(--accent-green);
+            box-shadow: 0 0 15px var(--glow-green);
+        }
+
+        .code-digit-box.empty {
+            color: var(--text-muted);
+        }
+
+        .final-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin: 8px 0 24px;
+        }
+
+        .final-input-area {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .final-digit-input {
+            width: 52px;
+            height: 64px;
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: var(--bg-dark);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .final-digit-input:focus {
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .final-digit-input.wrong {
+            border-color: var(--accent-rose);
+            color: var(--accent-rose);
+            animation: shake 0.5s ease;
+        }
+
+        .final-digit-input.correct {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .final-check-btn {
+            padding: 14px 40px;
+            border: none;
+            border-radius: 14px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            color: white;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .final-check-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+        }
+
+        .final-error {
+            color: var(--accent-rose);
+            font-size: 0.85rem;
+            margin-top: 12px;
+            display: none;
+        }
+
+        .final-error.visible { display: block; animation: fadeInUp 0.3s ease; }
+
+        .victory-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.88);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
+        }
+
+        .victory-overlay.active {
+            display: flex;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .victory-card {
+            background: var(--bg-card);
+            border: 2px solid var(--accent-green);
+            border-radius: 24px;
+            padding: 48px 36px;
+            text-align: center;
+            max-width: 520px;
+            width: 92%;
+            box-shadow: 0 0 80px var(--glow-green);
+            animation: scaleIn 0.5s ease;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .victory-icon { font-size: 80px; margin-bottom: 16px; animation: bounce 1.5s ease infinite; }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .victory-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--accent-green);
+            margin-bottom: 8px;
+        }
+
+        .victory-code {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple), var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+            letter-spacing: 6px;
+        }
+
+        .victory-message {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            margin-bottom: 28px;
+            line-height: 1.6;
+        }
+
+        .victory-btn {
+            padding: 12px 32px;
+            border: 2px solid var(--accent-green);
+            border-radius: 12px;
+            background: transparent;
+            color: var(--accent-green);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .victory-btn:hover {
+            background: rgba(16, 185, 129, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .particles {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 1001;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            animation: particleFall 3s ease-in forwards;
+        }
+
+        @keyframes particleFall {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .flask-decor {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 40px;
+            opacity: 0.15;
+            animation: float 5s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        .atom-decor {
+            position: fixed;
+            top: 100px;
+            left: 20px;
+            font-size: 36px;
+            opacity: 0.12;
+            animation: spin 10s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 640px) {
+            .container { padding: 20px 12px 40px; }
+            .station-body { padding: 18px; }
+            .station-header { padding: 14px 18px; }
+            .victory-card { padding: 32px 20px; }
+            .victory-code { font-size: 2.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+    <div class="flask-decor">🧪</div>
+    <div class="atom-decor">⚛️</div>
+
+    <div class="container">
+        <div class="intro-screen" id="introScreen">
+            <div class="intro-icon">🔐</div>
+            <h1 class="intro-title">Тайна нулевого периметра</h1>
+            
+            <div class="intro-legend">
+                Вы — <strong>группа исследователей</strong>. Профессор математики зашифровал код от сейфа с ценным прибором. 
+                Чтобы его открыть, нужно пройти <strong>6 станций</strong>. Каждый правильный ответ даёт <strong>одну цифру кода</strong> (от 0 до 9).<br><br>
+                Соберите все 6 цифр и введите финальный код — сейф откроется!
+            </div>
+
+            <div class="intro-rules">
+                <div class="rule-card">
+                    <div class="rule-icon">📝</div>
+                    <div class="rule-text"><strong>6 станций</strong><br>математических задач</div>
+                </div>
+                <div class="rule-card">
+                    <div class="rule-icon">🔢</div>
+                    <div class="rule-text"><strong>6 цифр</strong><br>код от сейфа</div>
+                </div>
+                <div class="rule-card">
+                    <div class="rule-icon">✅</div>
+                    <div class="rule-text"><strong>Выберите</strong><br>правильный ответ</div>
+                </div>
+            </div>
+
+            <button class="start-btn" onclick="startQuest()">🚀 НАЧАТЬ КВЕСТ</button>
+        </div>
+
+        <div class="quest-screen" id="questScreen">
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span>📡 Прогресс прохождения</span>
+                    <span class="prog-count" id="progText">0 / 6 станций</span>
+                </div>
+                <div class="progress-dots" id="progDots">
+                    <div class="prog-dot" id="dot0"></div>
+                    <div class="prog-dot" id="dot1"></div>
+                    <div class="prog-dot" id="dot2"></div>
+                    <div class="prog-dot" id="dot3"></div>
+                    <div class="prog-dot" id="dot4"></div>
+                    <div class="prog-dot" id="dot5"></div>
+                </div>
+            </div>
+
+            <!-- Station 1 -->
+            <div class="station-card locked" id="station0">
+                <div class="station-header">
+                    <div class="station-num" style="background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan);">01</div>
+                    <div class="station-info">
+                        <div class="station-name" style="color: var(--accent-cyan);">Квадратные корни</div>
+                        <div class="station-topic">Теоретическая станция</div>
+                    </div>
+                    <div class="station-status status-waiting" id="stat0">⏳ Ожидание</div>
+                </div>
+                <div class="station-body">
+                    <div class="station-quote">«Чтобы узнать первую цифру, найдите значение выражения и выберите правильный ответ»</div>
+                    <div class="station-task">
+                        <strong>Задание:</strong> Вычислите:
+                        <div class="math-block">
+                            √50 − √32 + √18 = ?
+                        </div>
+                    </div>
+                    <div class="options-grid" id="options0">
+                        <button class="option-btn" onclick="selectOption(0, this, 'A')" data-value="A">
+                            <span class="option-label">A</span>
+                            <span class="option-value">3√2</span>
+                            <span class="option-digit">→ Цифра 3</span>
+                        </button>
+                        <button class="option-btn" onclick="selectOption(0, this, 'B')" data-value="B">
+                            <span class="option-label">B</span>
+                            <span class="option-value">4√2</span>
+                            <span class="option-digit">→ Цифра 4</span>
+                        </button>
+                        <button class="option-btn" onclick="selectOption(0, this, 'C')" data-value="C">
+                            <span class="option-label">C</span>
+                            <span class="option-value">√36</span>
+                            <span class="option-digit">→ Цифра 6</span>
+                        </button>
+                        <button class="option-btn" onclick="selectOption(0, this, 'D')" data-value="D">
+                            <span class="option-label">D</span>
+                            <span class="option-value">√2</span>
+                            <span class="option-digit">→ Цифра 2</span>
+                        </button>
+                    </div>
+                    <div class="solution-box" id="solution0">
+                        <div class="solution-title">✅ Решение:</div>
+                        <div class="solution-text">
+                            √50 = 5√2, √32 = 4√2, √18 = 3√2<br>
+                            5√2 − 4√2 + 3√2 = 4√2<br>
+                            <strong style="color: var(--accent-green);">Правильный ответ: B → Цифра 4</strong>
+                        </div>
+                    </div>
+                    <div class="digit-reveal" id="reveal0">
+                        <div class="digit-label">Цифра кода:</div>
+                        <div class="digit-value">4</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Station 2 -->
+            <div class="station-card locked" id="station1">
+                <div class="station-header">
+                    <div class="station-num" style="background: rgba(139, 92, 246, 0.15); color: var(--accent-purple);">02</div>
+                    <div class="station-info">
+                        <div class="station-name" style="color: var(--accent-purple);">Теорема Пифагора</div>
+                        <div class="station-topic">Геометрическая станция</div>
+                    </div>
+                    <div class="station-status status-waiting" id="stat1">⏳ Ожидание</div>
+                </div>
+                <div class="station-body">
+                    <div class="station-quote">«Найдите длину недостающей стороны. Ответ округлите до целого числа»</div>
+                    <div class="station-task">
+                        <strong>Условие:</strong> На клетчатом поле (клетка = 1 см) нарисован прямоугольный треугольник с катетами <strong>9 см</strong> и <strong>12 см</strong>. Найдите гипотенузу.
+                        <div class="math-block" style="display: none;">
+                            c = √(9² + 12²) = √(81 + 144) = √225 = ?
+                        </div>
+                    </div>
+                    <div class="options-grid" id="options1">
+                        <button class="option-btn" onclick="selectOption(1, this, 'A')" data-value="A">
+                            <span class="option-label">A</span>
+                            <span class="option-value">13</span>
+                            <span class="option-digit">→ Цифра 3</span>
+                        </button>
+                        <button class="option-btn" onclick="selectOption(1, this, 'B')" data-value="B">
+                            <span class="option-label">B</span>
+                            <span class="option-value">15</span>
+                            <span class="option-digit">→ Цифра 5</span>
+                        </button>
+                        <button class="option-btn" onclick="selectOption(1, this, 'C')" data-value="C">
+                            <span class="option-label">C</span>
+                            <span class="option-value">21</span>
+                            <span class="option-digit">→ Цифра 1</span>
+                        </button>
+                        <button class="option-btn" onclick="selectOption(1, this, 'D')" data-value="D">
+                            <span class="option-label">D</span>
+                            <span class="option-value">10</span>
+                            <span class="option-digit">→ Цифра 0</span>
+                        </button>
+                    </div>
+                    <div class="solution-box" id="solution1">
+                        <div class="solution-title">✅ Решение:</div>
+                        <div class="solution-text">
+                            c = √(9² + 12²) = √(81 + 144) = √225 = 15<br>
+                            <strong style="color: var(--accent-green);">Правильный ответ: B → Цифра 5</strong>
+                        </div>
+                    </div>
+                    <div class="digit-reveal" id="reveal1">
+                        <div class="digit-label">Цифра кода:</div>
+                        <div class="digit-value">5</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Station 3 -->
+            <div class="station-card locked" id="station2">
+                <div class="station-header">
+                    <div class="station-num" style="background: rgba(245, 158, 11, 0.15); color: var(--accent-amber);">03</div>
+                    <div class="station-info">
+                        <div class="station-name" style="color: var(--accent-amber);">Рациональные дроби</div>
+                        <div class="station-topic">Алгебраическая станция</div>
+                    </div>
+                    <div class="station-status status-waiting" id="stat2">⏳ Ожидание</div>
+                </div>
+                <div class="station-body">
+                    <div class="station-quote">«Сократите дробь. В ответ запишите числитель получившейся дроби»</div>
+                    <div class="station-task">
+                        <strong>Задание:</strong> Сократите дробь:
+                        <div class="math-block">
+                            <span class="fraction">
+                                <span class="num">x² − 16</span>
+                                <span class="den">x² + 8x + 16</span>
+                            </span>
+                        </div>
+                        <div class="sub-text">В ответ запишите числитель после сокращения. Младший коэффициент при x = цифра.</div>
+                    </div>
+                    <div class="options-grid" id="options2">
+                        <button class="option-btn" onclick="selectOption(2, this, 'A')" data-value="A">
+                            <span class="option-label">A</span>
+                            <span class="option-value">x − 4</span>
+                            <span class="option-digit">→ Цифра 1</span>
+                        </button>
+                        <button class="option-btn" onclick="selectOption(2, this, 'B')" data-value="B">
+                            <span class="option-label">B</span>
+                            <span class="option-value">x + 4</span>
+                            <span class="option-digit">→ Цифра 4</span>
+                        </button>
+                        <button class="option-btn" onclick="selectOption(2, this, 'C')" data-value="C">
+                            <span class="option-label">C</span>
+                            <span class="option-value">x − 8</span>
+                            <span class="option-digit">→ Цифра 8</span>
+                        </button>
+                        <button class="option-btn" onclick="selectOption(2, this, 'D')" data-value="D">
+                            <span class="option-label">D</span>
+                            <span class="option-value">x + 8</span>
+                            <span class="option-digit">→ Цифра 8</span>
+                        </button>
+                    </div>
+                    <div class="solution-box" id="solution2">
+                        <div class="solution-title">✅ Решение:</div>
+                        <div class="solution-text">
+                            x² − 16 = (x−4)(x+4)<br>
+                            x² + 8x + 16 = (x+4)²<br>
+                            (x−4)(x+4) / (x+4)² = (x−4)/(x+4)<br>
+                            Числитель: <strong>x − 4</strong>, младший коэффициент = <strong>1</strong><br>
+                            <strong style="color: var(--accent-green);">Правильный ответ: A → Цифра 1</strong>
+                        </div>
+                    </div>
+                    <div class="digit-reveal" id="reveal2">
+                        <div class="digit-label">Цифра кода:</div>
+                        <div class="digit-value">1</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Station 4 -->
+            <div class="station-card locked" id="station3">
+                <div class="station-header">
+                    <div class="station-num" style="background: rgba(244, 63, 94, 0.15); color: var(--accent-rose);">04</div>
+                    <div class="station-info">
+                        <div class="station-name" style="color: var(--accent-rose);">Линейные неравенства</div>
+                        <div class="station-topic">Станция неравенств</div>
+                    </div>
+                    <div class="station-status status-waiting" id="stat3">⏳ Ожидание</div>
+                </div>
+                <div class="station-body">
+                    <div class="station-quote">«Решите неравенство и найдите наименьшее целое положительное решение»</div>
+                    <div class="station-task">
+                        <strong>Неравенство:</strong>
+                        <div class="math-block">
+                            3(x − 2) − 5x ≤ 4x + 6
+                        </div>
+                        <div class="sub-text">Найдите наименьшее <strong>целое положительное</strong> решение.</div>
+                    </div>
+                    <div class="options-grid" id="options3">
+                        <button class="option-btn" onclick="selectOption(3, this, 'A')" data-value="A">
+                            <span class="option-label">A</span>
+                            <span class="option-value">1</span>
+                            <span class="option-digit">→ Цифра 1</span>
+                        </button>
+                        <button class="option-btn" onclick="selectOption(3, this, 'B')" data-value="B">
+                            <span class="option-label">B</span>
+                            <span class="option-value">2</span>
+                            <span class="option-digit">→ Цифра 2</span>
+                        </button>
+                        <button class="option-btn" onclick="selectOption(3, this, 'C')" data-value="C">
+                            <span class="option-label">C</span>
+                            <span class="option-value">0</span>
+                            <span class="option-digit">→ Цифра 0</span>
+                        </button>
+                        <button class="option-btn" onclick="selectOption(3, this, 'D')" data-value="D">
+                            <span class="option-label">D</span>
+                            <span class="option-value">−1</span>
+                            <span class="option-digit">→ Не подходит</span>
+                        </button>
+                    </div>
+                    <div class="solution-box" id="solution3">
+                        <div class="solution-title">✅ Решение:</div>
+                        <div class="solution-text">
+                            3x − 6 − 5x ≤ 4x + 6<br>
+                            −2x − 6 ≤ 4x + 6<br>
+                            −12 ≤ 6x<br>
+                            x ≥ −2<br>
+                            Наименьшее целое <strong>положительное</strong>: <strong>1</strong><br>
+                            <strong style="color: var(--accent-green);">Правильный ответ: A → Цифра 1</strong>
+                        </div>
+                    </div>
+                    <div class="digit-reveal" id="reveal3">
+                        <div class="digit-label">Цифра кода:</div>
+                        <div class="digit-value">1</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Station 5 -->
+            <div class="station-card locked" id="station4">
+                <div class="station-header">
+                    <div class="station-num" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-green);">05</div>
+                    <div class="station-info">
+                        <div class="station-name" style="color: var(--accent-green);">Линейная функция</div>
+                        <div class="station-topic">Станция функций</div>
+                    </div>
+                    <div class="station-status status-waiting" id="stat4">⏳ Ожидание</div>
+                </div>
+                <div class="station-body">
+                    <div class="station-quote">«Найдите координату x точки пересечения графика с осью OX (нуль функции)»</div>
+                    <div class="station-task">
+                        <strong>Формула:</strong>
+                        <div class="math-block">
+                            y = −2x + 5
+                        </div>
+                        <div class="sub-text">Найдите нуль функции (y = 0). <strong>Первая цифра</strong> полученного числа = цифра кода.</div>
+                    </div>
+                    <div class="options-grid" id="options4">
+                        <button class="option-btn" onclick="selectOption(4, this, 'A')" data-value="A">
+                            <span class="option-label">A</span>
+                            <span class="option-value">2.5</span>
+                            <span class="option-digit">→ Первая цифра 2</span>
+                        </button>
+                        <button class="option-btn" onclick="selectOption(4, this, 'B')" data-value="B">
+                            <span class="option-label">B</span>
+                            <span class="option-value">−2</span>
+                            <span class="option-digit">→ Цифра 2 (отриц.)</span>
+                        </button>
+                        <button class="option-btn" onclick="selectOption(4, this, 'C')" data-value="C">
+                            <span class="option-label">C</span>
+                            <span class="option-value">5</span>
+                            <span class="option-digit">→ Цифра 5</span>
+                        </button>
+                        <button class="option-btn" onclick="selectOption(4, this, 'D')" data-value="D">
+                            <span class="option-label">D</span>
+                            <span class="option-value">0</span>
+                            <span class="option-digit">→ Цифра 0</span>
+                        </button>
+                    </div>
+                    <div class="solution-box" id="solution4">
+                        <div class="solution-title">✅ Решение:</div>
+                        <div class="solution-text">
+                            0 = −2x + 5<br>
+                            2x = 5<br>
+                            x = 2.5<br>
+                            Первая цифра числа 2.5 = <strong>2</strong><br>
+                            <strong style="color: var(--accent-green);">Правильный ответ: A → Цифра 2</strong>
+                        </div>
+                    </div>
+                    <div class="digit-reveal" id="reveal4">
+                        <div class="digit-label">Цифра кода:</div>
+                        <div class="digit-value">2</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Station 6 -->
+            <div class="station-card locked" id="station5">
+                <div class="station-header">
+                    <div class="station-num" style="background: rgba(6, 182, 212, 0.15); color: var(--accent-teal);">06</div>
+                    <div class="station-info">
+                        <div class="station-name" style="color: var(--accent-teal);">Теорема Виета</div>
+                        <div class="station-topic">Финальная станция</div>
+                    </div>
+                    <div class="station-status status-waiting" id="stat5">⏳ Ожидание</div>
+                </div>
+                <div class="station-body">
+                    <div class="station-quote">«Корни уравнения x² + 3x − 10 = 0 равны x₁ и x₂. Найдите сумму их квадратов: x₁² + x₂²»</div>
+                    <div class="station-task">
+                        <strong>Задание:</strong>
+                        <div class="math-block">
+                            x² + 3x − 10 = 0<br>
+                            <span style="font-size: 0.95rem; color: var(--text-muted);">Найдите x₁² + x₂²</span>
+                        </div>
+                        <div class="sub-text"><strong>Последняя цифра</strong> результата = цифра кода.</div>
+                    </div>
+                    <div class="options-grid" id="options5">
+                        <button class="option-btn" onclick="selectOption(5, this, 'A')" data-value="A">
+                            <span class="option-label">A</span>
+                            <span class="option-value">9</span>
+                            <span class="option-digit">→ Цифра 9</span>
+                        </button>
+                        <button class="option-btn" onclick="selectOption(5, this, 'B')" data-value="B">
+                            <span class="option-label">B</span>
+                            <span class="option-value">29</span>
+                            <span class="option-digit">→ Последняя цифра 9</span>
+                        </button>
+                        <button class="option-btn" onclick="selectOption(5, this, 'C')" data-value="C">
+                            <span class="option-label">C</span>
+                            <span class="option-value">16</span>
+                            <span class="option-digit">→ Цифра 6</span>
+                        </button>
+                        <button class="option-btn" onclick="selectOption(5, this, 'D')" data-value="D">
+                            <span class="option-label">D</span>
+                            <span class="option-value">20</span>
+                            <span class="option-digit">→ Цифра 0</span>
+                        </button>
+                    </div>
+                    <div class="solution-box" id="solution5">
+                        <div class="solution-title">✅ Решение:</div>
+                        <div class="solution-text">
+                            По теореме Виета: x₁ + x₂ = −3, x₁ · x₂ = −10<br>
+                            x₁² + x₂² = (x₁ + x₂)² − 2·x₁·x₂<br>
+                            = (−3)² − 2·(−10) = 9 + 20 = 29<br>
+                            Последняя цифра: <strong>9</strong><br>
+                            <strong style="color: var(--accent-green);">Правильный ответ: B → Цифра 9</strong>
+                        </div>
+                    </div>
+                    <div class="digit-reveal" id="reveal5">
+                        <div class="digit-label">Цифра кода:</div>
+                        <div class="digit-value">9</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="final-section" id="finalSection">
+                <div class="final-title">🔓 ФИНАЛЬНЫЙ ЭТАП</div>
+                <div class="final-subtitle" style="display: none;">Все 6 цифр собраны! Введите код от сейфа:</div>
+                
+                <div class="code-display" id="codeDisplay" style="display: none;">
+                    <div class="code-digit-box empty" id="cd0">?</div>
+                    <div class="code-digit-box empty" id="cd1">?</div>
+                    <div class="code-digit-box empty" id="cd2">?</div>
+                    <div class="code-digit-box empty" id="cd3">?</div>
+                    <div class="code-digit-box empty" id="cd4">?</div>
+                    <div class="code-digit-box empty" id="cd5">?</div>
+                </div>
+                <div class="final-hint">Введите 6 цифр, которые вы получили на каждой станции</div>
+
+                <div class="final-input-area">
+                    <input type="text" class="final-digit-input" id="fd0" maxlength="1" data-pos="0" autocomplete="off">
+                    <input type="text" class="final-digit-input" id="fd1" maxlength="1" data-pos="1" autocomplete="off">
+                    <input type="text" class="final-digit-input" id="fd2" maxlength="1" data-pos="2" autocomplete="off">
+                    <input type="text" class="final-digit-input" id="fd3" maxlength="1" data-pos="3" autocomplete="off">
+                    <input type="text" class="final-digit-input" id="fd4" maxlength="1" data-pos="4" autocomplete="off">
+                    <input type="text" class="final-digit-input" id="fd5" maxlength="1" data-pos="5" autocomplete="off">
+                </div>
+
+                <button class="final-check-btn" onclick="checkFinalCode()">ОТКРЫТЬ СЕЙФ</button>
+                <div class="final-error" id="finalError">Неверный код! Проверьте все 6 цифр.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="victory-overlay" id="victoryOverlay">
+        <div class="victory-card">
+            <div class="victory-icon">🎉</div>
+            <div class="victory-title">СЕЙФ ОТКРЫТ!</div>
+            <div class="victory-code">4 5 1 1 2 9</div>
+            <div class="victory-message">
+                Поздравляем, исследователи!<br>
+                Вы успешно прошли все 6 станций и открыли сейф с ценным прибором профессора! 🧪🔬
+            </div>
+            <button class="victory-btn" onclick="closeVictory()">✨ Великолепно!</button>
+        </div>
+    </div>
+
+    <div class="particles" id="particles"></div>
+
+    <script>
+        const correctAnswers = ['B', 'B', 'A', 'A', 'A', 'B'];
+        const stationDigits = ['4', '5', '1', '1', '2', '9'];
+        const stationStates = [false, false, false, false, false, false];
+        let completedCount = 0;
+
+        function startQuest() {
+            document.getElementById('introScreen').classList.add('hidden');
+            document.getElementById('questScreen').classList.add('active');
+            
+            // Разблокируем первую станцию
+            unlockStation(0);
+        }
+
+        function unlockStation(stationIndex) {
+            const stationCard = document.getElementById(`station${stationIndex}`);
+            stationCard.classList.remove('locked');
+            
+            // Обновляем статус
+            const statusSpan = document.getElementById(`stat${stationIndex}`);
+            statusSpan.className = 'station-status status-active';
+            statusSpan.textContent = '🔵 Активна';
+            
+            // Активируем точку прогресса
+            document.getElementById(`dot${stationIndex}`).classList.add('active');
+        }
+
+        function selectOption(stationIndex, btn, value) {
+            // Если станция уже решена - ничего не делаем
+            if (stationStates[stationIndex]) return;
+
+            const optionsContainer = document.getElementById(`options${stationIndex}`);
+            const buttons = optionsContainer.querySelectorAll('.option-btn');
+            const isCorrect = value === correctAnswers[stationIndex];
+
+            // Блокируем все кнопки на текущей станции
+            buttons.forEach(b => b.disabled = true);
+
+            if (isCorrect) {
+                // Визуальное оформление правильного ответа
+                btn.classList.add('correct');
+                
+                // Отмечаем станцию как решенную
+                stationStates[stationIndex] = true;
+                completedCount++;
+
+                // Показываем решение и цифру
+                document.getElementById(`solution${stationIndex}`).classList.add('visible');
+                document.getElementById(`reveal${stationIndex}`).classList.add('visible');
+
+                // Обновляем статус станции
+                const statusSpan = document.getElementById(`stat${stationIndex}`);
+                statusSpan.className = 'station-status status-done';
+                statusSpan.textContent = '✅ Решена';
+
+                // Обновляем прогресс
+                const dot = document.getElementById(`dot${stationIndex}`);
+                dot.classList.remove('active');
+                dot.classList.add('completed');
+                
+                document.getElementById('progText').textContent = `${completedCount} / 6 станций`;
+
+                // Обновляем отображение кода
+                const cd = document.getElementById(`cd${stationIndex}`);
+                cd.textContent = stationDigits[stationIndex];
+                cd.classList.remove('empty');
+                cd.classList.add('filled');
+
+                // Разблокируем следующую станцию (если есть)
+                if (stationIndex < 5) {
+                    unlockStation(stationIndex + 1);
+                } 
+                
+                // Если это последняя станция - показываем финальный блок
+                if (stationIndex === 5) {
+                    setTimeout(() => {
+                        document.getElementById('finalSection').classList.add('visible');
+                        document.getElementById('finalSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 500);
+                }
+                
+                // Автоматическая прокрутка к следующей станции (если не последняя)
+                if (stationIndex < 5) {
+                    setTimeout(() => {
+                        document.getElementById(`station${stationIndex + 1}`).scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'center' 
+                        });
+                    }, 800);
+                }
+            } else {
+                // Неправильный ответ - показываем анимацию ошибки
+                btn.classList.add('wrong');
+                setTimeout(() => {
+                    btn.classList.remove('wrong');
+                    // Разблокируем кнопки для повторной попытки
+                    buttons.forEach(b => b.disabled = false);
+                }, 800);
+            }
+        }
+
+        // Обработчики для полей ввода финального кода
+        document.querySelectorAll('.final-digit-input').forEach(input => {
+            input.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '');
+                const pos = parseInt(this.dataset.pos);
+                if (this.value.length === 1 && pos < 5) {
+                    const nextInput = document.querySelector(`.final-digit-input[data-pos="${pos + 1}"]`);
+                    if (nextInput) nextInput.focus();
+                }
+            });
+
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && this.value === '') {
+                    const pos = parseInt(this.dataset.pos);
+                    if (pos > 0) {
+                        const prevInput = document.querySelector(`.final-digit-input[data-pos="${pos - 1}"]`);
+                        if (prevInput) {
+                            prevInput.focus();
+                            prevInput.value = '';
+                        }
+                    }
+                }
+                if (e.key === 'Enter') checkFinalCode();
+            });
+
+            input.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const paste = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
+                for (let i = 0; i < 6 && i < paste.length; i++) {
+                    const inp = document.querySelector(`.final-digit-input[data-pos="${i}"]`);
+                    if (inp) inp.value = paste[i];
+                }
+                const lastPos = Math.min(paste.length, 6) - 1;
+                if (lastPos >= 0) {
+                    document.querySelector(`.final-digit-input[data-pos="${lastPos}"]`)?.focus();
+                }
+            });
+        });
+
+        function checkFinalCode() {
+            const inputs = document.querySelectorAll('.final-digit-input');
+            let code = '';
+            let allFilled = true;
+
+            inputs.forEach(inp => {
+                if (!inp.value) allFilled = false;
+                code += inp.value;
+            });
+
+            if (!allFilled) {
+                const errorDiv = document.getElementById('finalError');
+                errorDiv.textContent = 'Введите все 6 цифр!';
+                errorDiv.classList.add('visible');
+                setTimeout(() => errorDiv.classList.remove('visible'), 2000);
+                return;
+            }
+
+            if (code === '451129') {
+                inputs.forEach(inp => {
+                    inp.classList.remove('wrong');
+                    inp.classList.add('correct');
+                });
+                document.getElementById('finalError').classList.remove('visible');
+                
+                setTimeout(() => {
+                    document.getElementById('victoryOverlay').classList.add('active');
+                    createParticles();
+                }, 300);
+            } else {
+                const errorDiv = document.getElementById('finalError');
+                errorDiv.textContent = 'Неверный код! Проверьте все 6 цифр.';
+                errorDiv.classList.add('visible');
+                
+                inputs.forEach(inp => {
+                    inp.classList.remove('correct');
+                    inp.classList.add('wrong');
+                    setTimeout(() => inp.classList.remove('wrong'), 600);
+                });
+                
+                setTimeout(() => errorDiv.classList.remove('visible'), 2000);
+            }
+        }
+
+        function closeVictory() {
+            document.getElementById('victoryOverlay').classList.remove('active');
+        }
+
+        function createParticles() {
+            const container = document.getElementById('particles');
+            container.innerHTML = '';
+            const colors = ['#06b6d4', '#10b981', '#8b5cf6', '#f59e0b', '#f43f5e', '#ffffff', '#14b8a6'];
+            
+            for (let i = 0; i < 100; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                p.style.animationDelay = Math.random() * 2.5 + 's';
+                p.style.animationDuration = (2 + Math.random() * 3) + 's';
+                p.style.width = (4 + Math.random() * 10) + 'px';
+                p.style.height = p.style.width;
+                p.style.top = '-20px';
+                container.appendChild(p);
+            }
+
+            setTimeout(() => { container.innerHTML = ''; }, 5000);
+        }
+    </script>
+</body>
+</html>

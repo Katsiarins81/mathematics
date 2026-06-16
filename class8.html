@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Математические Квесты — 8 класс</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.8/index.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .btn-game {
+            transition: all 0.2s ease;
+        }
+
+        .btn-game:hover {
+            transform: translateX(4px);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-bg {
+            background: linear-gradient(135deg, #eef2ff 0%, #fdf4ff 50%, #ecfdf5 100%);
+        }
+    </style>
+</head>
+
+<body class="text-slate-800">
+
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                    ∑
+                </div>
+                <div>
+                    <h1 class="text-lg sm:text-xl font-bold text-slate-900">МатКвест</h1>
+                    <p class="text-xs text-slate-500 hidden sm:block">6 класс</p>
+                </div>
+            </div>
+            
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-bg py-12 sm:py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 items-center">
+            <div class="fade-in">
+                <span
+                    class="inline-block bg-indigo-100 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full mb-4">
+                    🎯 Новый учебный год
+                </span>
+                <h2 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 leading-tight mb-6">
+                    Математические <br>
+                    <span class="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">квесты
+                        для 7 класса</span>
+                </h2>
+                <p class="text-lg text-slate-600 mb-8 max-w-lg">
+                    Исследуй мир чисел, фигур и уравнений через увлекательные игры. Выбирай раздел, проходи квесты и
+                    становись мастером математики!
+                </p>
+               
+                
+            </div>
+            <div class="fade-in flex justify-center">
+                <img src="https://image.qwenlm.ai/public_source/f185a07f-9f9c-42a6-b27c-2cf262728cba/11a747d06-ff57-45bb-a35a-a06f94c360ee.png"
+                    alt="Математическое приключение"
+                    class="w-full max-w-md drop-shadow-2xl rounded-2xl transform hover:rotate-2 transition duration-500">
+            </div>
+        </div>
+    </section>
+
+    <!-- Sections with Games -->
+    <section id="sections" class="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-14">
+                <h3 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-3">Выбери свой раздел</h3>
+                <p class="text-slate-600 max-w-2xl mx-auto">Каждый раздел содержит несколько квестов разной сложности.
+                    Нажми на игру, чтобы начать приключение!</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+
+                <!-- Section 1: Десятичные дроби -->
+                <div
+                    class="card-hover bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-8 border border-blue-100">
+                    <div class="flex items-start justify-between mb-6">
+                        <div
+                            class="w-14 h-14 bg-blue-500 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg shadow-blue-200">
+                            ½
+                        </div>
+                        <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">5
+                            квестов</span>
+                    </div>
+                    <h4 class="text-2xl font-bold text-slate-900 mb-2">Десятичные дроби </h4>
+                    <p class="text-slate-600 mb-6 text-sm">Раздел учит выполнять арифметические действия со специальным
+                        видом дробей, у которых знаменатель равен степени числа 10.</p>
+                    <div class="space-y-3">
+<!--                        
+                        <a href="class6_sam11.html"
+                            class="btn-game flex items-center justify-between bg-white hover:bg-blue-50 border border-blue-200 rounded-xl p-4 group">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center font-bold text-sm">1</span>
+                                <div>
+                                    <div class="font-semibold text-slate-900 text-sm">MINECRAFT: ЛАБОРАТОРИЯ
+                                        РЕДСТОУН-ИНЖЕНЕРА</div>
+                                    <div class="text-xs text-slate-500">Испытание № 1: Десятичные дроби (1)</div>
+                                </div>
+                            </div>
+                            <span class="text-blue-500 group-hover:translate-x-1 transition">→</span>
+                        </a>
+                        <a href="class6_sam12.html"
+                            class="btn-game flex items-center justify-between bg-white hover:bg-blue-50 border border-blue-200 rounded-xl p-4 group">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center font-bold text-sm">2</span>
+                                <div>
+                                    <div class="font-semibold text-slate-900 text-sm">MINECRAFT: ЛАБОРАТОРИЯ
+                                        РЕДСТОУН-ИНЖЕНЕРА</div>
+                                    <div class="text-xs text-slate-500">Испытание № 1: Десятичные дроби (2)</div>
+                                </div>
+                            </div>
+                            <span class="text-blue-500 group-hover:translate-x-1 transition">→</span>
+                        </a>
+                        <a href="class6_sam21.html"
+                            class="btn-game flex items-center justify-between bg-white hover:bg-blue-50 border border-blue-200 rounded-xl p-4 group">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center font-bold text-sm">3</span>
+                                <div>
+                                    <div class="font-semibold text-slate-900 text-sm">ПРОПАВШИЙ ЦИФЕРБЛАТ</div>
+                                    <div class="text-xs text-slate-500">Детективный квест по десятичным дробям</div>
+                                </div>
+                            </div>
+                            <span class="text-blue-500 group-hover:translate-x-1 transition">→</span>
+                        </a>
+                        <a href="class6_sam51.html"
+                            class="btn-game flex items-center justify-between bg-white hover:bg-blue-50 border border-blue-200 rounded-xl p-4 group">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center font-bold text-sm">4</span>
+                                <div>
+                                    <div class="font-semibold text-slate-900 text-sm">Пиратский квест: Остров Дробей</div>
+                                    <div class="text-xs text-slate-500"></div>
+                                </div>
+                            </div>
+                            <span class="text-blue-500 group-hover:translate-x-1 transition">→</span>
+                        </a> -->
+                    </div>
+                </div>
+
+                <!-- Section 2: Проценты и пропорции -->
+                <div
+                    class="card-hover bg-gradient-to-br from-emerald-50 to-teal-50 rounded-3xl p-8 border border-emerald-100">
+                    <div class="flex items-start justify-between mb-6">
+                        <div
+                            class="w-14 h-14 bg-emerald-500 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg shadow-emerald-200">
+                            %
+                        </div>
+                        <span class="bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full">3
+                            квеста</span>
+                    </div>
+                    <h4 class="text-2xl font-bold text-slate-900 mb-2">Проценты и пропорции</h4>
+                    <p class="text-slate-600 mb-6 text-sm">Этот блок объясняет, как находить сотые части величин и
+                        решать задачи на равенство двух отношений.</p>
+                    <div class="space-y-3">
+                        <a href="index4.html"
+                            class="btn-game flex items-center justify-between bg-white hover:bg-emerald-50 border border-emerald-200 rounded-xl p-4 group">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="w-8 h-8 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center font-bold text-sm">1</span>
+                                <div>
+                                    <div class="font-semibold text-slate-900 text-sm">Архитектор фигур</div>
+                                    <div class="text-xs text-slate-500">Площади и периметры</div>
+                                </div>
+                            </div>
+                            <span class="text-emerald-500 group-hover:translate-x-1 transition">→</span>
+                        </a>
+                        <a href="index5.html"
+                            class="btn-game flex items-center justify-between bg-white hover:bg-emerald-50 border border-emerald-200 rounded-xl p-4 group">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="w-8 h-8 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center font-bold text-sm">2</span>
+                                <div>
+                                    <div class="font-semibold text-slate-900 text-sm">Угловой лабиринт</div>
+                                    <div class="text-xs text-slate-500">Виды углов</div>
+                                </div>
+                            </div>
+                            <span class="text-emerald-500 group-hover:translate-x-1 transition">→</span>
+                        </a>
+                        <a href="index6.html"
+                            class="btn-game flex items-center justify-between bg-white hover:bg-emerald-50 border border-emerald-200 rounded-xl p-4 group">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="w-8 h-8 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center font-bold text-sm">3</span>
+                                <div>
+                                    <div class="font-semibold text-slate-900 text-sm">Объёмный мир</div>
+                                    <div class="text-xs text-slate-500">Объёмы фигур</div>
+                                </div>
+                            </div>
+                            <span class="text-emerald-500 group-hover:translate-x-1 transition">→</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Section 3: Множество: -->
+                <div
+                    class="card-hover bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-8 border border-purple-100">
+                    <div class="flex items-start justify-between mb-6">
+                        <div
+                            class="w-14 h-14 bg-purple-500 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg shadow-purple-200">
+                            &empty;
+                        </div>
+                        <span class="bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">3
+                            квеста</span>
+                    </div>
+                    <h4 class="text-2xl font-bold text-slate-900 mb-2">Множество:</h4>
+                    <p class="text-slate-600 mb-6 text-sm">Тема знакомит с понятием объединения объектов в группы по
+                        общим свойствам и правилами работы с ними.</p>
+                    <div class="space-y-3">
+                        <a href="index7.html"
+                            class="btn-game flex items-center justify-between bg-white hover:bg-purple-50 border border-purple-200 rounded-xl p-4 group">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="w-8 h-8 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center font-bold text-sm">1</span>
+                                <div>
+                                    <div class="font-semibold text-slate-900 text-sm">Поиск X</div>
+                                    <div class="text-xs text-slate-500">Линейные уравнения</div>
+                                </div>
+                            </div>
+                            <span class="text-purple-500 group-hover:translate-x-1 transition">→</span>
+                        </a>
+                        <a href="index8.html"
+                            class="btn-game flex items-center justify-between bg-white hover:bg-purple-50 border border-purple-200 rounded-xl p-4 group">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="w-8 h-8 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center font-bold text-sm">2</span>
+                                <div>
+                                    <div class="font-semibold text-slate-900 text-sm">Координатная карта</div>
+                                    <div class="text-xs text-slate-500">Координатная плоскость</div>
+                                </div>
+                            </div>
+                            <span class="text-purple-500 group-hover:translate-x-1 transition">→</span>
+                        </a>
+                        <a href="index9.html"
+                            class="btn-game flex items-center justify-between bg-white hover:bg-purple-50 border border-purple-200 rounded-xl p-4 group">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="w-8 h-8 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center font-bold text-sm">3</span>
+                                <div>
+                                    <div class="font-semibold text-slate-900 text-sm">Битва неравенств</div>
+                                    <div class="text-xs text-slate-500">Неравенства</div>
+                                </div>
+                            </div>
+                            <span class="text-purple-500 group-hover:translate-x-1 transition">→</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Section 4: Рациональные числа: -->
+                <div
+                    class="card-hover bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-8 border border-amber-100">
+                    <div class="flex items-start justify-between mb-6">
+                        <div
+                            class="w-14 h-14 bg-amber-500 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg shadow-amber-200">
+                            Q
+                        </div>
+                        <span class="bg-amber-100 text-amber-700 text-xs font-semibold px-3 py-1 rounded-full">3
+                            квеста</span>
+                    </div>
+                    <h4 class="text-2xl font-bold text-slate-900 mb-2">Рациональные числа:</h4>
+                    <p class="text-slate-600 mb-6 text-sm">Здесь изучаются положительные и отрицательные числа, а также
+                        правила их сложения, вычитания, умножения и деления.</p>
+                    <div class="space-y-3">
+                        <a href="index10.html"
+                            class="btn-game flex items-center justify-between bg-white hover:bg-amber-50 border border-amber-200 rounded-xl p-4 group">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="w-8 h-8 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center font-bold text-sm">1</span>
+                                <div>
+                                    <div class="font-semibold text-slate-900 text-sm">Логический детектив</div>
+                                    <div class="text-xs text-slate-500">Задачи на логику</div>
+                                </div>
+                            </div>
+                            <span class="text-amber-500 group-hover:translate-x-1 transition">→</span>
+                        </a>
+                        <a href="index11.html"
+                            class="btn-game flex items-center justify-between bg-white hover:bg-amber-50 border border-amber-200 rounded-xl p-4 group">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="w-8 h-8 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center font-bold text-sm">2</span>
+                                <div>
+                                    <div class="font-semibold text-slate-900 text-sm">Олимпиадный марафон</div>
+                                    <div class="text-xs text-slate-500">Сложные задачи</div>
+                                </div>
+                            </div>
+                            <span class="text-amber-500 group-hover:translate-x-1 transition">→</span>
+                        </a>
+                        <a href="index12.html"
+                            class="btn-game flex items-center justify-between bg-white hover:bg-amber-50 border border-amber-200 rounded-xl p-4 group">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="w-8 h-8 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center font-bold text-sm">3</span>
+                                <div>
+                                    <div class="font-semibold text-slate-900 text-sm">Головоломка мастера</div>
+                                    <div class="text-xs text-slate-500">Комбинаторика</div>
+                                </div>
+                            </div>
+                            <span class="text-amber-500 group-hover:translate-x-1 transition">→</span>
+                        </a>
+                    </div>
+                </div>
+                <!-- Section 5: Координатная плоскость -->
+                <div
+                    class="card-hover bg-gradient-to-br from-blue-50 to-orange-50 rounded-3xl p-8 border border-blue-100">
+                    <div class="flex items-start justify-between mb-6">
+                        <div
+                            class="w-14 h-14 bg-blue-500 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg shadow-blue-200">
+                            →
+                        </div>
+                        <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">3
+                            квеста</span>
+                    </div>
+                    <h4 class="text-2xl font-bold text-slate-900 mb-2">Координатная плоскость</h4>
+                    <p class="text-slate-600 mb-6 text-sm">Раздел учит находить и строить точки на плоскости с помощью
+                        двух пересекающихся числовых осей.</p>
+                    <div class="space-y-3">
+                        <a href="index10.html"
+                            class="btn-game flex items-center justify-between bg-white hover:bg-blue-50 border border-blue-200 rounded-xl p-4 group">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center font-bold text-sm">1</span>
+                                <div>
+                                    <div class="font-semibold text-slate-900 text-sm">Логический детектив</div>
+                                    <div class="text-xs text-slate-500">Задачи на логику</div>
+                                </div>
+                            </div>
+                            <span class="text-blue-500 group-hover:translate-x-1 transition">→</span>
+                        </a>
+                        <a href="index11.html"
+                            class="btn-game flex items-center justify-between bg-white hover:bg-blue-50 border border-blue-200 rounded-xl p-4 group">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center font-bold text-sm">2</span>
+                                <div>
+                                    <div class="font-semibold text-slate-900 text-sm">Олимпиадный марафон</div>
+                                    <div class="text-xs text-slate-500">Сложные задачи</div>
+                                </div>
+                            </div>
+                            <span class="text-blue-500 group-hover:translate-x-1 transition">→</span>
+                        </a>
+                        <a href="index12.html"
+                            class="btn-game flex items-center justify-between bg-white hover:bg-blue-50 border border-blue-200 rounded-xl p-4 group">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center font-bold text-sm">3</span>
+                                <div>
+                                    <div class="font-semibold text-slate-900 text-sm">Головоломка мастера</div>
+                                    <div class="text-xs text-slate-500">Комбинаторика</div>
+                                </div>
+                            </div>
+                            <span class="text-blue-500 group-hover:translate-x-1 transition">→</span>
+                        </a>
+                    </div>
+                </div>
+                <!-- Section 6: Наглядная геометрия -->
+                <div
+                    class="card-hover bg-gradient-to-br from-emerald-50 to-orange-50 rounded-3xl p-8 border border-emerald-100">
+                    <div class="flex items-start justify-between mb-6">
+                        <div
+                            class="w-14 h-14 bg-emerald-500 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg shadow-emerald-200">
+                            △
+                        </div>
+                        <span class="bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full">3
+                            квеста</span>
+                    </div>
+                    <h4 class="text-2xl font-bold text-slate-900 mb-2">Наглядная геометрия</h4>
+                    <p class="text-slate-600 mb-6 text-sm"> Этот раздел помогает развить пространственное мышление через изучение базовых геометрических фигур и их наглядных свойств.</p>
+                    <div class="space-y-3">
+                        <a href="index10.html"
+                            class="btn-game flex items-center justify-between bg-white hover:bg-amber-50 border border-amber-200 rounded-xl p-4 group">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="w-8 h-8 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center font-bold text-sm">1</span>
+                                <div>
+                                    <div class="font-semibold text-slate-900 text-sm">Логический детектив</div>
+                                    <div class="text-xs text-slate-500">Задачи на логику</div>
+                                </div>
+                            </div>
+                            <span class="text-amber-500 group-hover:translate-x-1 transition">→</span>
+                        </a>
+                        <a href="index11.html"
+                            class="btn-game flex items-center justify-between bg-white hover:bg-amber-50 border border-amber-200 rounded-xl p-4 group">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="w-8 h-8 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center font-bold text-sm">2</span>
+                                <div>
+                                    <div class="font-semibold text-slate-900 text-sm">Олимпиадный марафон</div>
+                                    <div class="text-xs text-slate-500">Сложные задачи</div>
+                                </div>
+                            </div>
+                            <span class="text-amber-500 group-hover:translate-x-1 transition">→</span>
+                        </a>
+                        <a href="index12.html"
+                            class="btn-game flex items-center justify-between bg-white hover:bg-amber-50 border border-amber-200 rounded-xl p-4 group">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="w-8 h-8 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center font-bold text-sm">3</span>
+                                <div>
+                                    <div class="font-semibold text-slate-900 text-sm">Головоломка мастера</div>
+                                    <div class="text-xs text-slate-500">Комбинаторика</div>
+                                </div>
+                            </div>
+                            <span class="text-amber-500 group-hover:translate-x-1 transition">→</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+<!-- итоговые -->
+        <div style="width: 40%; margin: 10px auto;"
+                    class="card-hover bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-8 border border-purple-100">
+                    <div class="flex items-start justify-between mb-6">
+                        <div
+                            class="w-14 h-14 bg-purple-500 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg shadow-purple-200">
+                            ∞
+                        </div>
+                        <span class="bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">3
+                            квеста</span>
+                    </div>
+                    <h4 class="text-2xl font-bold text-slate-900 mb-2">ИТОГОВАЯ</h4>
+                    <!-- <p class="text-slate-600 mb-6 text-sm">Тема знакомит с понятием объединения объектов в группы по
+                        общим свойствам и правилами работы с ними.</p> -->
+                    <div class="space-y-3" >
+                        <a href="class8_itog.html"
+                            class="btn-game flex items-center justify-between bg-white hover:bg-purple-50 border border-purple-200 rounded-xl p-4 group">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="w-8 h-8 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center font-bold text-sm">1</span>
+                                <div>
+                                    <div class="font-semibold text-slate-900 text-sm">Тайна нулевого периметра</div>
+                                </div>
+                            </div>
+                            <span class="text-purple-500 group-hover:translate-x-1 transition">→</span>
+                        </a>
+                       
+                    </div>
+                </div>
+
+    </section>
+    
+
+    <!-- Progress / CTA Section -->
+    
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-10 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-8">
+            <div>
+                <div class="flex items-center gap-3 mb-4">
+                    <div
+                        class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center text-white font-bold text-xl">
+                        ∑
+                    </div>
+                    <span class="text-white font-bold text-lg">МатКвест</span>
+                </div>
+                <p class="text-sm">Увлекательные математические квесты для школьников 6 класса. Учись играя!</p>
+            </div>
+           
+
+        </div>
+        <div class="max-w-7xl mx-auto mt-8 pt-6 border-t border-slate-800 text-center text-sm">
+            © 2026 МатКвест. Все права защищены.<br>Испытание № 2: Десятичные дроби 
+        </div>
+    </footer>
+
+</body>
+
+</html>
